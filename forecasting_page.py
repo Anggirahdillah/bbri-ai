@@ -67,7 +67,7 @@ def render_forecasting_page() -> None:
                 color:#2587E2;
                 font-size:46px;
                 font-weight:700;
-                margin:0 0 0 0;
+                margin:0 0 4px 0;
             ">
                 Forecasting BBRI
             </h1>
@@ -91,13 +91,10 @@ def render_forecasting_page() -> None:
 
         # tombol Predict (dibungkus predict-btn supaya CSS nempel)
         with c_predict:
-    # penanda khusus sebelum tombol
-            st.markdown('<div class="predict-btn"></div>', unsafe_allow_html=True)
-
-    predict_clicked = False
-    if st.button("Predict", key="forecast_predict"):
-        predict_clicked = True
-
+            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+            if st.button("Predict", key="forecast_predict"):
+                predict_clicked = True
+            st.markdown("</div>", unsafe_allow_html=True)
 
         # checkbox Auto-update
         with c_auto:
@@ -113,7 +110,7 @@ def render_forecasting_page() -> None:
 
         with h_label_col:
             st.markdown(
-                '<p style="color:#D5D7F8;font-size:20px;margin-bottom:20px;">Horizon:</p>',
+                '<p style="color:#D5D7F8;font-size:20px;margin-bottom:5px;">Horizon:</p>',
                 unsafe_allow_html=True,
             )
 
@@ -151,7 +148,7 @@ def render_forecasting_page() -> None:
                 <p class="sub-label" style="margin:0 0 4px 0;">
                     Last updated : {last_updated}
                 </p>
-                <p style="margin:0 0 500px 0;">
+                <p class="sub-label" style="margin: 0 0 50px 0;">
                     Model Used : {best_model}
                 </p>
             </div>
@@ -194,11 +191,11 @@ def render_forecasting_page() -> None:
         st.markdown(
             """
             <div class="empty-card">
-                <h3 style="font-size:20px;font-weight:600;margin-bottom:6px;
+                <h3 style="font-size:28px;font-weight:700;
                            font-family:'Inter', sans-serif; color:#FFFFFF;">
                     No forecast generated yet
                 </h3>
-                <p style="font-size:13px;color:#9CA3AF; margin:0;">
+                <p style="font-size:21px; font-weight:400;color:#818181; margin:0;">
                     Click "Predict" to run the model and see the results.
                 </p>
             </div>
@@ -238,11 +235,10 @@ def render_forecasting_page() -> None:
 
     if isinstance(change_val, (int, float, float)):
         change_str = f"{change_val:.2f}%"
-        change_color = "#22C55E" if change_val >= 0 else "#F97373"
+        change_color = "#00CD34" if change_val >= 0 else "#FF0B0B"
     else:
         change_str = str(change_val)
-        change_color = "#E5E7EB"
-
+        change_color = "#F5F5F5"
     with c1:
         st.markdown(
             f"""
@@ -274,10 +270,10 @@ def render_forecasting_page() -> None:
 
     if isinstance(avg_val, (int, float, float)):
         avg_str = f"{avg_val:.2f}%"
-        avg_color = "#22C55E" if avg_val >= 0 else "#F97373"
+        avg_color = "#00CD34" if avg_val >= 0 else "#FF0B0B"
     else:
         avg_str = str(avg_val)
-        avg_color = "#E5E7EB"
+        avg_color = "#F5F5F5"
 
     with c2:
         st.markdown(
