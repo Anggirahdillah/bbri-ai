@@ -84,6 +84,12 @@ p,span,label {
     margin: 10px 20px 10px 40px;
     width: 250px;
     }
+.metric-card-change {
+    background-color: #252B31;
+    padding: 10px 25px;
+    border-radius: 20px;
+    margin: 0 0 0 50px;
+    }
 
 
 /* CARD untuk blok yang punya .price-title */
