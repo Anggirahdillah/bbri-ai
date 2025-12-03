@@ -70,7 +70,7 @@ p,span,label {
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 20px 10px 0;
-    width: 300px;
+    width: 250px;
 }
 .metric-card-change {
     background-color: #252B31;
