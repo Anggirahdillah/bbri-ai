@@ -137,6 +137,10 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     background: #252B31;
     border-radius: 20px;
     padding: 20px 24px;
+    font-size: 28px;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-family: inter, sans-serif;
 }
 
 /* Judul di dalam kartu (biru besar seperti gambar) */
@@ -160,26 +164,29 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     color: #F5F5F5;
     font-size: 25px;
     font-family: inter, sans-serif;
+    font-weight: 400;
+            
 }
 .metric-value {
-    color: #FFFFFF;
-    font-weight: 600;
+    color: #F5F5F5;
+    font-weight: 400;
+    font-size: 25px;
+    font-family: inter, sans-serif;
+   
 }
 
 /* CARD BAWAH (chart + tabel) */
 .bottom-card {
-    background: #020617;
-    border-radius: 16px;
-    padding: 18px 20px;
-    border: 1px solid #2D3648;
+    background: #252B31;
+    border-radius: 20px;
+    padding: 10px 10px;
     height: 100%;
-    margin-top: 20px;
 }
 .chart-title {
-    font-size: 14px;
+    font-size: 24px;
     font-weight: 500;
-    color: #E5E7EB;
-    margin-bottom: 10px;
+    color: #2587E2;
+            
 }
 
 /* EMPTY STATE */
@@ -302,8 +309,8 @@ div[data-testid="stDownloadButton"] > button:disabled {
 
 /* Sub label kecil (Last updated, dll) */
 .sub-label {
-    font-size: 13px;
-    color: #9CA3AF;
+    font-size: 26px;
+    color: #D5D7F8;
 }
 
 </style>
