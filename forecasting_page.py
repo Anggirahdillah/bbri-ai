@@ -151,7 +151,7 @@ def render_forecasting_page() -> None:
                 <p class="sub-label" style="margin:0 0 4px 0;">
                     Last updated : {last_updated}
                 </p>
-                <p class="sub-label" style="margin:0 0 500px 0;">
+                <p style="margin:0 0 500px 0;">
                     Model Used : {best_model}
                 </p>
             </div>
