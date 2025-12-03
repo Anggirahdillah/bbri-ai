@@ -190,7 +190,7 @@ def render_forecasting_page() -> None:
     # inisialisasi state
     if "forecast_data" not in st.session_state:
         st.session_state["forecast_data"] = None
-
+    
     if "forecast_horizon_days" not in st.session_state:
         st.session_state["forecast_horizon_days"] = 7  # default 7D
 
