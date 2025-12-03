@@ -7,9 +7,12 @@ from forecasting_engine import run_forecast
 
 # ================== PAGE CONFIG ==================
 st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
-st.markdown("""
+
+# ================== GLOBAL CSS ==================
+st.markdown(
+    """
 <style>
-/* ========= MAIN CARD ========= */
+/* CARD UTAMA TENGAH */
 .main-card {
     background-color: #020617;
     padding: 28px 34px 30px 34px;
@@ -20,19 +23,23 @@ st.markdown("""
     border: 1px solid #1f2937;
 }
 
-/* ========= METRIC CARDS ========= */
+/* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
 .small-card {
-    background: #252B31;
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
     border-radius: 16px;
     padding: 20px 24px;
     border: 1px solid #2D3648;
 }
+
+/* Judul di dalam kartu (biru besar seperti gambar) */
 .card-title {
     color: #3B82F6;
     font-size: 22px;
     font-weight: 700;
     margin: 0 0 12px 0;
 }
+
+/* Baris metric kiri-kanan */
 .metric-row {
     display: flex;
     justify-content: space-between;
@@ -40,10 +47,15 @@ st.markdown("""
     margin: 5px 0;
     font-size: 13px;
 }
-.metric-label { color: #E5E7EB; }
-.metric-value { color: #FFFFFF; font-weight: 600; }
+.metric-label {
+    color: #E5E7EB;
+}
+.metric-value {
+    color: #FFFFFF;
+    font-weight: 600;
+}
 
-/* ========= BOTTOM CARDS ========= */
+/* CARD BAWAH (chart + tabel) */
 .bottom-card {
     background: #020617;
     border-radius: 16px;
@@ -59,8 +71,10 @@ st.markdown("""
     margin-bottom: 10px;
 }
 
-/* ========= EMPTY STATE ========= */
-.empty-card-wrapper { margin-top: 28px; }
+/* EMPTY STATE */
+.empty-card-wrapper {
+    margin-top: 28px;
+}
 .empty-card {
     background: #020617;
     border-radius: 18px;
@@ -69,10 +83,29 @@ st.markdown("""
     text-align: center;
 }
 
-/* ========= BAR ATAS ========= */
-.control-row { margin-top: 8px; margin-bottom: 8px; }
+/* Bar atas: Predict + Auto update */
+.control-row {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
 
-/* ========= AUTO UPDATE ========= */
+/* Tombol Predict di dalam wrapper predict-btn */
+.predict-btn button {
+    background-color: #2587E2 !important;
+    color: #FFFFFF !important;
+    border-radius: 999px !important;
+    padding: 10px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: 0.2s;
+}
+.predict-btn button:hover {
+    background-color: #1D4ED8 !important;
+}
+
+/* Auto-update dibuat seperti pill */
 .auto-checkbox div[data-testid="stCheckbox"] > label {
     background-color: #020617;
     border-radius: 999px;
@@ -83,15 +116,24 @@ st.markdown("""
     cursor: pointer;
     border: 1px solid #2D3648;
 }
-.auto-checkbox div[data-testid="stCheckbox"] label p { margin-bottom: 0; }
-.auto-checkbox div[data-testid="stCheckbox"] svg { width: 14px; height: 14px; }
+.auto-checkbox div[data-testid="stCheckbox"] label p {
+    margin-bottom: 0px;
+}
+.auto-checkbox div[data-testid="stCheckbox"] svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Caption checkbox */
 div[data-testid="stCheckbox"] label {
     color: #FFFFFF;
     font-size: 14px;
 }
 
-/* ========= HORIZON CHIPS (RADIO) ========= */
-.horizon-row { margin-top: 2px; }
+/* Horizon chips (radio) */
+.horizon-row {
+    margin-top: 2px;
+}
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
     display: flex !important;
     gap: 10px;
@@ -120,7 +162,7 @@ div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup']
     pointer-events: none;
 }
 
-/* ========= DOWNLOAD BUTTON ========= */
+/* Download button biru */
 div[data-testid="stDownloadButton"] > button {
     background-color: #2563EB;
     color: #FFFFFF;
@@ -135,35 +177,15 @@ div[data-testid="stDownloadButton"] > button:disabled {
     color: #9CA3AF;
 }
 
-/* ========= SUB LABEL ========= */
-.sub-label { font-size: 13px; color: #9CA3AF; }
-
-/* ========= PREDICT BUTTON KHUSUS ========= */
-.predict-btn-wrapper button {
-    background-color: #2587E2 !important;
-    color: #FFFFFF !important;
-    border-radius: 999px !important;
-    padding: 10px 32px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    cursor: pointer !important;
-}
-.predict-btn-wrapper button:hover {
-    background-color: #1D4ED8 !important;
-}
-
-/* Backup selector kalau struktur HTML beda */
-div.stButton > button[kind="secondary"],
-div.stButton > button[kind="primary"],
-div.stButton > button {
-    background-color: #2587E2 !important;
-    color: #FFFFFF !important;
-    border-radius: 999px !important;
-    border: none !important;
+/* Sub label kecil (Last updated, dll) */
+.sub-label {
+    font-size: 13px;
+    color: #9CA3AF;
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # =============== HALAMAN FORECASTING ===============
@@ -213,36 +235,38 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-       # Bar: Predict + Auto update
-    st.markdown('<div class="control-row">', unsafe_allow_html=True)
-    c_predict, c_auto = st.columns([0.7, 1.2])
+        # Bar: Predict + Auto update
+        st.markdown('<div class="control-row">', unsafe_allow_html=True)
+        c_predict, c_auto = st.columns([0.7, 1.2])
 
-    predict_clicked = False
-    with c_predict:
-        st.markdown('<div class="predict-btn-wrapper">', unsafe_allow_html=True)
-        if st.button("Predict", key="forecast_predict"):
-            predict_clicked = True
+        predict_clicked = False
+
+        # tombol Predict (dibungkus predict-btn supaya CSS nempel)
+        with c_predict:
+            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+            if st.button("Predict", key="forecast_predict"):
+                predict_clicked = True
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # checkbox Auto-update
+        with c_auto:
+            st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
+            st.checkbox("Auto-update", value=False, key="forecast_auto_update")
+            st.markdown("</div>", unsafe_allow_html=True)
+
         st.markdown("</div>", unsafe_allow_html=True)
-
-    with c_auto:
-        st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
-        st.checkbox("Auto-update", value=False, key="forecast_auto_update")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)  # tutup control-row
-
 
         # Horizon chips
-    st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
-    h_label_col, h_radio_col = st.columns([0.32, 1.8])
+        st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
+        h_label_col, h_radio_col = st.columns([0.32, 1.8])
 
-    with h_label_col:
+        with h_label_col:
             st.markdown(
                 '<p style="color:#D5D7F8;font-size:14px;margin-top:5px;">Horizon:</p>',
                 unsafe_allow_html=True,
             )
 
-    with h_radio_col:
+        with h_radio_col:
             label_map = {7: "7D", 14: "14D", 30: "30D"}
             reverse_map = {"7D": 7, "14D": 14, "30D": 30}
             current_label = label_map.get(current_horizon, "7D")
@@ -259,7 +283,7 @@ def render_forecasting_page() -> None:
             current_horizon = reverse_map[selected_label]
             st.session_state["forecast_horizon_days"] = current_horizon
 
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # sisi kanan header: last updated & model
     if st.session_state["forecast_data"] is not None:
@@ -516,4 +540,3 @@ def render_forecasting_page() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)  # tutup .main-card
-
