@@ -2,74 +2,95 @@ from typing import Optional
 
 import streamlit as st
 import pandas as pd
-
+from io import BytesIO 
 from forecasting_engine import run_forecast
 
+# ================== PAGE CONFIG ==================
+st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
 
-# =============== CSS KHUSUS HALAMAN FORECASTING ===============
+# ================== GLOBAL CSS ==================
 st.markdown("""
 <style>
 /* CARD UTAMA TENGAH */
 .main-card {
-    background-color: #111827;
+    background-color: #020617;
     padding: 28px 34px 30px 34px;
     border-radius: 26px;
-    max-width: 1000px;
+    max-width: 1120px;
     margin: 32px auto 40px auto;
-    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.65);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.75);
     border: 1px solid #1f2937;
 }
 
 /* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
 .small-card {
-    background-color: #252B31;
-    padding: 18px 20px;
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
     border-radius: 16px;
+    padding: 20px 24px;
+    border: 1px solid #2D3648;
 }
 
-/* Kartu besar bawah (chart + tabel) */
+/* Judul di dalam kartu (biru besar seperti gambar) */
+.card-title {
+    color: #3B82F6;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+/* Baris metric kiri-kanan */
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 13px;
+}
+.metric-label {
+    color: #E5E7EB;
+}
+.metric-value {
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+/* CARD BAWAH (chart + tabel) */
 .bottom-card {
-    background-color: #252B31;
-    padding: 18px 20px;
+    background: #020617;
     border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid #2D3648;
     height: 100%;
+    margin-top: 20px;
+}
+.chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #E5E7EB;
+    margin-bottom: 10px;
 }
 
-/* Empty state di tengah card */
+/* EMPTY STATE */
 .empty-card-wrapper {
     margin-top: 28px;
 }
 .empty-card {
-    background-color: #252B31;
-    padding: 46px 20px;
+    background: #020617;
     border-radius: 18px;
+    padding: 40px 20px;
+    border: 1px solid #2D3648;
     text-align: center;
-    color: #C9D1D9;
 }
 
-/* Label abu kecil */
-.sub-label {
-    font-size: 13px;
-    color: #9CA3AF;
-}
-
-/* Judul di dalam card (biru seperti Figma) */
-.card-title {
-    font-size: 15px;
-    color: #2587E2;
-    font-weight: 600;
+/* Bar atas: Predict + Auto update */
+.control-row {
+    margin-top: 8px;
     margin-bottom: 8px;
 }
 
-/* CONTROL BAR: Predict + Auto update */
-.control-row {
-    margin-top: 8px;
-    margin-bottom: 10px;
-}
-
-/* Tombol Predict ala Figma */
+/* Tombol Predict */
 .predict-btn div.stButton > button {
-    background-color: #2587E2;
+    background-color: #2563EB;
     color: #FFFFFF;
     border-radius: 999px;
     padding: 10px 32px;
@@ -77,27 +98,27 @@ st.markdown("""
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: 0.25s;
+    transition: 0.2s;
 }
 .predict-btn div.stButton > button:hover {
-    background-color: #2f8ef0;
+    background-color: #1D4ED8;
 }
 
-/* Checkbox Auto update dibuat seperti pill abu */
-div.auto-checkbox div[data-testid="stCheckbox"] > label {
-    background-color: #252B31;
+/* Auto-update dibuat seperti pill */
+.auto-checkbox div[data-testid="stCheckbox"] > label {
+    background-color: #020617;
     border-radius: 999px;
     padding: 8px 16px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    border: 1px solid #374151;
+    border: 1px solid #2D3648;
 }
-div.auto-checkbox div[data-testid="stCheckbox"] label p {
+.auto-checkbox div[data-testid="stCheckbox"] label p {
     margin-bottom: 0px;
 }
-div.auto-checkbox div[data-testid="stCheckbox"] svg {
+.auto-checkbox div[data-testid="stCheckbox"] svg {
     width: 14px;
     height: 14px;
 }
@@ -108,13 +129,10 @@ div[data-testid="stCheckbox"] label {
     font-size: 14px;
 }
 
-/* HORIZON CHIP (radio) */
+/* Horizon chips (radio) */
 .horizon-row {
     margin-top: 2px;
-    margin-bottom: 2px;
 }
-
-/* styling radio horizon */
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
     display: flex !important;
     gap: 10px;
@@ -123,18 +141,18 @@ div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup']
     padding: 6px 18px;
     border-radius: 999px;
     font-size: 14px;
-    background-color: #252B31;
-    border: 1px solid #374151;
-    color: #D5D7F8;
+    background-color: #020617;
+    border: 1px solid #2D3648;
+    color: #E5E7EB;
     cursor: pointer;
     transition: 0.2s;
 }
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:hover {
-    background-color: #1F2933;
+    background-color: #0F172A;
 }
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
-    background-color: #2587E2 !important;
-    border-color: #2587E2 !important;
+    background-color: #2563EB !important;
+    border-color: #2563EB !important;
     color: #FFFFFF !important;
 }
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] input[type="radio"] {
@@ -143,9 +161,9 @@ div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup']
     pointer-events: none;
 }
 
-/* Download button biru ala Figma */
+/* Download button biru */
 div[data-testid="stDownloadButton"] > button {
-    background-color: #2587E2;
+    background-color: #2563EB;
     color: #FFFFFF;
     border-radius: 999px;
     border: none;
@@ -154,16 +172,14 @@ div[data-testid="stDownloadButton"] > button {
     font-weight: 500;
 }
 div[data-testid="stDownloadButton"] > button:disabled {
-    background-color: #1f2937;
+    background-color: #111827;
     color: #9CA3AF;
 }
 
-/* Judul chart */
-.chart-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #E5E7EB;
-    margin-bottom: 8px;
+/* Sub label kecil (Last updated, dll) */
+.sub-label {
+    font-size: 13px;
+    color: #9CA3AF;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -178,7 +194,6 @@ def render_forecasting_page() -> None:
     if "forecast_horizon_days" not in st.session_state:
         st.session_state["forecast_horizon_days"] = 7  # default 7D
 
-    # horizon terakhir yang dipakai untuk load data
     if "forecast_last_horizon" not in st.session_state:
         st.session_state["forecast_last_horizon"] = None
 
@@ -337,6 +352,14 @@ def render_forecasting_page() -> None:
     forecast_summary: dict = data["forecast_summary"]
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
+        # siapkan bytes untuk download plot
+    plot_bytes = None
+    if price_fig is not None:
+        try:
+            plot_bytes = price_fig.to_image(format="png")
+        except Exception:
+            plot_bytes = None
+
 
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
@@ -345,57 +368,100 @@ def render_forecasting_page() -> None:
     # ================== METRIC ROW ==================
     c1, c2, c3 = st.columns(3)
 
+    # ---------- Today Overview ----------
+    last_close = today_overview.get("last_close", "-")
+    change_val = today_overview.get("change_pct", "-")
+    volume = today_overview.get("volume", "-")
+
+    if isinstance(change_val, (int, float, float)):
+        change_str = f"{change_val:.2f}%"
+        change_color = "#22C55E" if change_val >= 0 else "#F97373"
+    else:
+        change_str = str(change_val)
+        change_color = "#E5E7EB"
+
     with c1:
         st.markdown(
             f"""
             <div class="small-card">
                 <p class="card-title">Today Overview</p>
-                <p style="font-size:13px;color:#E5E7EB;margin:0;">Last Close</p>
-                <p style="font-size:20px;font-weight:700;margin:0;">
-                    {today_overview.get("last_close", "-")}
+                <p class="metric-row">
+                    <span class="metric-label">Last Close</span>
+                    <span class="metric-value">{last_close}</span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:2px 0 0 0;">
-                    Change: {today_overview.get("change_pct","-")}%
+                <p class="metric-row">
+                    <span class="metric-label">Change</span>
+                    <span class="metric-value" style="color:{change_color};">
+                        {change_str}
+                    </span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    Volume: {today_overview.get("volume","-")}
+                <p class="metric-row">
+                    <span class="metric-label">Volume</span>
+                    <span class="metric-value">{volume}</span>
                 </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
+    # ---------- Forecast Summary ----------
+    horizon_days = forecast_summary.get("horizon_days", "-")
+    end_price = forecast_summary.get("end_price", "-")
+    avg_val = forecast_summary.get("avg_daily_change", "-")
+
+    if isinstance(avg_val, (int, float, float)):
+        avg_str = f"{avg_val:.2f}%"
+        avg_color = "#22C55E" if avg_val >= 0 else "#F97373"
+    else:
+        avg_str = str(avg_val)
+        avg_color = "#E5E7EB"
 
     with c2:
         st.markdown(
             f"""
             <div class="small-card">
                 <p class="card-title">Forecast Summary</p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    Horizon: {forecast_summary.get("horizon_days","-")} Days
+                <p class="metric-row">
+                    <span class="metric-label">Horizon</span>
+                    <span class="metric-value">{horizon_days} Days</span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    End Price: {forecast_summary.get("end_price","-")}
+                <p class="metric-row">
+                    <span class="metric-label">End Price</span>
+                    <span class="metric-value">{end_price}</span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    Avg Daily Change: {forecast_summary.get("avg_daily_change","-")}%</p>
+                <p class="metric-row">
+                    <span class="metric-label">Avg Daily Change</span>
+                    <span class="metric-value" style="color:{avg_color};">
+                        {avg_str}
+                    </span>
+                </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
+    # ---------- Model Evaluation ----------
+    rmse = model_eval.get("rmse", "-")
+    mae = model_eval.get("mae", "-")
+    mape = model_eval.get("mape", "-")
 
     with c3:
         st.markdown(
             f"""
             <div class="small-card">
                 <p class="card-title">Model Evaluation</p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    RMSE: {model_eval.get("rmse","-")}
+                <p class="metric-row">
+                    <span class="metric-label">RMSE</span>
+                    <span class="metric-value">{rmse}</span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    MAE: {model_eval.get("mae","-")}
+                <p class="metric-row">
+                    <span class="metric-label">MAE</span>
+                    <span class="metric-value">{mae}</span>
                 </p>
-                <p style="font-size:12px;color:#9CA3AF;margin:0;">
-                    MAPE: {model_eval.get("mape","-")}%</p>
+                <p class="metric-row">
+                    <span class="metric-label">MAPE</span>
+                    <span class="metric-value">{mape}%</span>
+                </p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -444,12 +510,14 @@ def render_forecasting_page() -> None:
 
         col1, col2 = st.columns(2)
         with col1:
-            st.download_button(
-                "Download Plot",
-                b"",
-                file_name="plot.png",
-                disabled=True,
+            st.download_button("Download Plot",
+            data=plot_bytes if plot_bytes is not None else b"",
+                file_name="forecast_bbri_plot.png",
+                mime="image/png",
+                disabled=(plot_bytes is None),
             )
+                
+                
         with col2:
             st.download_button(
                 "Download CSV",
