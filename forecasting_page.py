@@ -25,163 +25,11 @@ st.markdown(
 
 /* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
 .small-card {
-    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+    background: #252B31;
     border-radius: 16px;
     padding: 20px 24px;
-    border: 1px solid #2D3648;
 }
 
-/* Judul di dalam kartu (biru besar seperti gambar) */
-.card-title {
-    color: #3B82F6;
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0 0 12px 0;
-}
-
-/* Baris metric kiri-kanan */
-.metric-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 5px 0;
-    font-size: 13px;
-}
-.metric-label {
-    color: #E5E7EB;
-}
-.metric-value {
-    color: #FFFFFF;
-    font-weight: 600;
-}
-
-/* CARD BAWAH (chart + tabel) */
-.bottom-card {
-    background: #020617;
-    border-radius: 16px;
-    padding: 18px 20px;
-    border: 1px solid #2D3648;
-    height: 100%;
-    margin-top: 20px;
-}
-.chart-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #E5E7EB;
-    margin-bottom: 10px;
-}
-
-/* EMPTY STATE */
-.empty-card-wrapper {
-    margin-top: 28px;
-}
-.empty-card {
-    background: #020617;
-    border-radius: 18px;
-    padding: 40px 20px;
-    border: 1px solid #2D3648;
-    text-align: center;
-}
-
-/* Bar atas: Predict + Auto update */
-.control-row {
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-/* Tombol Predict di dalam wrapper predict-btn */
-.predict-btn button {
-    background-color: #2587E2 !important;
-    color: #FFFFFF !important;
-    border-radius: 999px !important;
-    padding: 10px 32px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: 0.2s;
-}
-.predict-btn button:hover {
-    background-color: #1D4ED8 !important;
-}
-
-/* Auto-update dibuat seperti pill */
-.auto-checkbox div[data-testid="stCheckbox"] > label {
-    background-color: #020617;
-    border-radius: 999px;
-    padding: 8px 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 1px solid #2D3648;
-}
-.auto-checkbox div[data-testid="stCheckbox"] label p {
-    margin-bottom: 0px;
-}
-.auto-checkbox div[data-testid="stCheckbox"] svg {
-    width: 14px;
-    height: 14px;
-}
-
-/* Caption checkbox */
-div[data-testid="stCheckbox"] label {
-    color: #FFFFFF;
-    font-size: 14px;
-}
-
-/* Horizon chips (radio) */
-.horizon-row {
-    margin-top: 2px;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
-    display: flex !important;
-    gap: 10px;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label {
-    padding: 6px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    background-color: #020617;
-    border: 1px solid #2D3648;
-    color: #E5E7EB;
-    cursor: pointer;
-    transition: 0.2s;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:hover {
-    background-color: #0F172A;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
-    background-color: #2563EB !important;
-    border-color: #2563EB !important;
-    color: #FFFFFF !important;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] input[type="radio"] {
-    opacity: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
-/* Download button biru */
-div[data-testid="stDownloadButton"] > button {
-    background-color: #2563EB;
-    color: #FFFFFF;
-    border-radius: 999px;
-    border: none;
-    padding: 8px 24px;
-    font-size: 14px;
-    font-weight: 500;
-}
-div[data-testid="stDownloadButton"] > button:disabled {
-    background-color: #111827;
-    color: #9CA3AF;
-}
-
-/* Sub label kecil (Last updated, dll) */
-.sub-label {
-    font-size: 13px;
-    color: #9CA3AF;
-}
 </style>
 """,
     unsafe_allow_html=True,
@@ -237,16 +85,19 @@ def render_forecasting_page() -> None:
 
         # Bar: Predict + Auto update
         st.markdown('<div class="control-row">', unsafe_allow_html=True)
-        c_predict, c_auto = st.columns([0.7, 1.2])
+        c_predict, c_auto = st.columns([0.5, 0.5])
 
         predict_clicked = False
 
         # tombol Predict (dibungkus predict-btn supaya CSS nempel)
         with c_predict:
-            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-            if st.button("Predict", key="forecast_predict"):
-                predict_clicked = True
-            st.markdown("</div>", unsafe_allow_html=True)
+    # penanda khusus sebelum tombol
+            st.markdown('<div class="predict-btn"></div>', unsafe_allow_html=True)
+
+    predict_clicked = False
+    if st.button("Predict", key="forecast_predict"):
+        predict_clicked = True
+
 
         # checkbox Auto-update
         with c_auto:
@@ -262,7 +113,7 @@ def render_forecasting_page() -> None:
 
         with h_label_col:
             st.markdown(
-                '<p style="color:#D5D7F8;font-size:14px;margin-top:5px;">Horizon:</p>',
+                '<p style="color:#D5D7F8;font-size:20px;margin-bottom:20px;">Horizon:</p>',
                 unsafe_allow_html=True,
             )
 
@@ -300,7 +151,7 @@ def render_forecasting_page() -> None:
                 <p class="sub-label" style="margin:0 0 4px 0;">
                     Last updated : {last_updated}
                 </p>
-                <p class="sub-label" style="margin:0 0 30px 0;">
+                <p class="sub-label" style="margin:0 0 500px 0;">
                     Model Used : {best_model}
                 </p>
             </div>
