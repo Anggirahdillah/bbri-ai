@@ -106,24 +106,17 @@ div[data-testid="stVerticalBlock"] div:has(> .price-title) {
 
 
 div.stButton > button {
-.time-active {
-    color: #2587E2 !important;
-    border-bottom: 2px solid #2587E2;
-    padding-bottom: 4px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 17px;
-    font-family: Inter, sans-serif;
-}
-
-.time-inactive {
-    color: #6B7280;
-    padding-bottom: 4px;
-    text-align: center;
-    font-size: 26px;
-    font-family: Inter, sans-serif;
-}
-}
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #6B7280 !important;
+        font-size: 17px;
+        font-family: Inter, sans-serif;
+        padding-bottom: 4px;
+    }
+    div.stButton > button:hover {
+        color: #E5E7EB !important;
+    }
 
 
 
@@ -161,21 +154,41 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
 
 }
 
-/* Tombol Predict HANYA di halaman forecasting */
-.predict-btn div.stButton > button {
-    background-color: #2587E2;
-    color: white;
-    border-radius: 18px;
-    padding: 10px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
+/* Tombol Predict - BEFORE click (inactive) */
+.predict-btn.inactive div.stButton > button {
+    background-color: #2587E2 !important;
+    color: white !important;
+    border-radius: 18px !important;
+    padding: 10px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    border: none !important;
     cursor: pointer;
+    width: 100% !important; /* tidak melebar aneh */
     transition: 0.25s;
 }
-.predict-btn div.stButton > button:hover {
-    background-color: #2f8ef0;
+
+/* Tombol Predict - AFTER click (active) */
+.predict-btn.active div.stButton > button {
+    background-color: #1f6ac4 !important;   /* biru lebih gelap */
+    color: white !important;
+    border-radius: 18px !important;
+    padding: 10px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    width: 100% !important;
 }
+
+/* Hover state (optional) */
+.predict-btn.inactive div.stButton > button:hover {
+    background-color: #2f8ef0 !important;
+}
+
+.predict-btn.active div.stButton > button:hover {
+    background-color: #1d5faf !important;
+}
+
 
 
     </style>
