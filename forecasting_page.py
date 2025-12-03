@@ -510,14 +510,12 @@ def render_forecasting_page() -> None:
 
         col1, col2 = st.columns(2)
         with col1:
-            st.download_button("Download Plot",
-            data=plot_bytes if plot_bytes is not None else b"",
-                file_name="forecast_bbri_plot.png",
-                mime="image/png",
-                disabled=(plot_bytes is None),
+            st.download_button(
+                "Download Plot",
+                b"",
+                file_name="plot.png",
+                disabled=True,
             )
-                
-                
         with col2:
             st.download_button(
                 "Download CSV",
