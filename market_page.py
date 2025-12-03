@@ -386,19 +386,44 @@ def render_market_overview(_data_dict):
                 config={"displayModeBar": False},
             )
 
-            # =============== TAB INTERAKTIF 1D / 1W / 1M / 1Y ===============
-            active = st.session_state.market_horizon
-            labels = ["1D", "1W", "1M", "1Y"]
 
-            c1, c2, c3, c4 = st.columns(4)
+            st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+# Tabs horizon (rapetin)
+            sp_left, c1, c2, c3, c4, sp_right = st.columns([3, 2, 2, 2, 2, 1])
+            # DI DALAM container yang sama dengan grafik
             cols = [c1, c2, c3, c4]
+            labels = ["1D", "1W", "1M", "1Y"]
+            active = st.session_state.market_horizon
+
 
             for label, col in zip(labels, cols):
                 with col:
-                    if st.button(label, key=f"tab_{label}"):
-                        st.session_state.market_horizon = label
-                        st.rerun()
-                
+                    if label == active:
+                        # teks aktif, biru, ada garis bawah seperti mockup
+                        st.markdown(
+                            f"""
+                            <p style="
+                                color:#2587E2;
+                                border-bottom:4px solid #2587E2;
+                                text-align:center;
+                                font-weight:500;
+                                font-size:17px;
+                                font-family:montserrat, sans-serif;
+                                margin:5px;
+                                display:inline-block;     /* ← tambahkan */
+                                width:auto;    
+                            ">
+                                {label}
+                            </p>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        # tombol pasif, abu abu
+                        if st.button(label, key=f"tab_{label}"):
+                            st.session_state.market_horizon = label
+                            st.rerun()
+
 
         
            # ======================
