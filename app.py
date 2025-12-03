@@ -74,7 +74,7 @@ p,span,label {
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 20px 10px 0;
-    width: 300px;
+    width: 200px;
     }
 
 .metric-card-high{
@@ -82,7 +82,7 @@ p,span,label {
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 20px 10px 10px;
-    width: 300px;
+    width: 200px;
     }
 
 
