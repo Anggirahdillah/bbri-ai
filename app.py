@@ -74,12 +74,12 @@ p,span,label {
 }
 
 .metric-card-high {
-background-color: #252B31;
+    background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 0 10px 20px;
     width: 250px;
-)
+}
 
 .metric-card-change {
     background-color: #252B31;
