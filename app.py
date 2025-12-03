@@ -7,100 +7,88 @@ from market_page import render_market_overview
 from forecasting_page import render_forecasting_page
 from forecasting_engine import run_forecast
 
+BASE_DIR = Path(__file__).parent
 
 st.set_page_config(
     page_title="BBRI-AI",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded", 
+    initial_sidebar_state="expanded",
 )
-BASE_DIR = Path(__file__).parent
 
-st.markdown(
-    """
-    <style>
-        body { background-color: #1A1E23; }
-        .main { background-color: #1A1E23; }
-        [data-testid="stAppViewContainer"],
+# Inject CSS — FIX supaya tdk hilang setelah refresh / interaksi
+st.markdown("""
+<style>
+body { background-color: #1A1E23; }
+.main { background-color: #1A1E23; }
+
+[data-testid="stAppViewContainer"],
 .block-container {
-    background-color: #1A1E23!important;
+    background-color: #1A1E23 !important;
 }
 
-
+/* Sidebar */
 section[data-testid="stSidebar"] {
     background-color: #072A4A;
     padding-top: 20px;
-        }
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1{
+    color:#2587E2;
+    font-size:46px;
+    font-weight:700;
+    margin:0 0 4px 0;
+    }
+            
+/* Heading text */
+h2,h3,h4,h5,h6 {
     color: #FFFFFF;
     font-family: "Inter", sans-serif;
     font-weight: 600;
-        }
+}
 
 p,span,label {
     color: #C9D1D9;
     font-family: "Inter", sans-serif;
     font-weight: 400;
-    }
+}
 
+/* 📌 Card components */
 .big-card {
     background-color: #252B31;
     padding: 20px 25px;
     border-radius: 20px;
-    }
-
+}
 .metric-card {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 10px 10px 0;
-    }
-
-
-.metric-value {
-    font-size: 32px;
-    font-weight: 700px;
-    }
-
-.metric-label {
-    font-size: 14px;
-    opacity: 0.8;
-        }
-
-.metric-card-low{
+}
+.metric-card-low, .metric-card-high {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
-    margin: 10px 40px 10px 0;
-    width: 250px;
-    }
-
-.metric-card-high{
-    background-color: #252B31;
-    padding: 10px 25px;
-    border-radius: 20px;
-    margin: 10px 20px 10px 40px;
-    width: 250px;
-    }
+    margin: 10px 20px 10px 0;
+    width: 300px;
+}
 .metric-card-change {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
     margin: 0 0 0 50px;
-    }
+}
 
+.metric-value { font-size: 32px; font-weight: 700; }
+.metric-label { font-size: 14px; opacity: 0.8; }
 
-/* CARD untuk blok yang punya .price-title */
+/* 📌 BLOCK Price Panel */
 div[data-testid="stVerticalBlock"] div:has(> .price-title) {
     background:#252B31;
     border-radius:20px;
     padding:18px 20px 16px 20px;
     margin: 10px 20px 10px 135px;
 }
-
-/* Judul Price Trend */
 .price-title {
     color:#2587E2;
     font-size:33px;
@@ -110,97 +98,219 @@ div[data-testid="stVerticalBlock"] div:has(> .price-title) {
     margin:0 0 10px 0;
 }
 
-
+/* 📌 Sidebar Buttons */
 div.stButton > button {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        color: #6B7280 !important;
-        font-size: 17px;
-        font-family: Inter, sans-serif;
-        padding-bottom: 4px;
-    }
-    div.stButton > button:hover {
-        color: #E5E7EB !important;
-    }
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #6B7280 !important;
+    font-size: 17px;
+    font-family: Inter, sans-serif;
+    padding-bottom: 4px;
+}
+div.stButton > button:hover {
+    color: #E5E7EB !important;
+}
 
-
-
+/* 📌 Radio Menu */
 div[role='radiogroup'] {
     display: flex!important;
     gap: 15px;
     font-size: 24px;
 }
-
 div[role='radiogroup'] > label {
     padding: 15px 20px;
     border-radius: 10px;
     font-size: 24px;
     color: #FFFFFF;
-    display: center;  
 }
-
-div[role='radiogroup'] > label:hover {
-     align-items: stretch;
-     font-size: 24px;   
-}
-
-div[role='radiogroup'] > label[aria-checked="true"] {
+div[role='radiogroup'] > label[aria-checked="true"],
+div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     background-color: #03529C !important;
     color: #FFFFFF !important;
+    padding: 20px 35px;
     border: 1px solid #03529C;
-    align-items: flex-start;
+}
+            
+/* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
+.small-card {
+    background: #252B31;
+    border-radius: 20px;
+    padding: 20px 24px;
 }
 
-div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
-    background-color: #03529C;
-    padding : 20px 35px;
-    border: 1px solid #03529C;
-    align-items: flex-start;
-
+/* Judul di dalam kartu (biru besar seperti gambar) */
+.card-title {
+    color: #FFFFFF;
+    font-size: 25px;
+    font-weight: 400;
+    margin: 0 0 12px 0;
+    font-family: inter, sans-serif;
 }
 
-/* Tombol Predict - BEFORE click (inactive) */
-.predict-btn.inactive div.stButton > button {
-    background-color: #2587E2 !important;
-    color: white !important;
-    border-radius: 18px !important;
+/* Baris metric kiri-kanan */
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 13px;
+}
+.metric-label {
+    color: #F5F5F5;
+    font-size: 25px;
+    font-family: inter, sans-serif;
+}
+.metric-value {
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+/* CARD BAWAH (chart + tabel) */
+.bottom-card {
+    background: #020617;
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid #2D3648;
+    height: 100%;
+    margin-top: 20px;
+}
+.chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #E5E7EB;
+    margin-bottom: 10px;
+}
+
+/* EMPTY STATE */
+.empty-card-wrapper {
+    margin-top: 28px;
+}
+.empty-card {
+    background: #020617;
+    border-radius: 18px;
+    padding: 40px 20px;
+    border: 1px solid #2D3648;
+    text-align: center;
+}
+
+/* Bar atas: Predict + Auto update */
+.control-row {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+
+/* ===== TOMBOL PREDICT KHUSUS ===== */
+/* .predict-btn -> div setelahnya (stButton) -> button */
+.predict-btn + div.stButton > button {
+    background-color: #2587E2 !important;   /* biru */
+    color: #FFFFFF !important;
+    border-radius: 999px !important;
     padding: 10px 32px !important;
     font-size: 16px !important;
     font-weight: 600 !important;
     border: none !important;
+    cursor: pointer !important;
+    transition: 0.2s ease-in-out !important;
+}
+
+/* hover */
+.predict-btn + div.stButton > button:hover {
+    background-color: #1D4ED8 !important;
+    box-shadow: 0 4px 12px rgba(37, 135, 226, 0.35) !important;
+}
+
+/* active (di-klik) */
+.predict-btn + div.stButton > button:active {
+    background-color: #1A3FA0 !important;
+    transform: scale(0.97) !important;
+}
+
+
+
+
+/* Auto-update dibuat seperti pill */
+.auto-checkbox div[data-testid="stCheckbox"] > label {
+    background-color: #020617;
+    border-radius: 999px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
-    width: 100% !important; /* tidak melebar aneh */
-    transition: 0.25s;
+    border: 1px solid #2D3648;
+}
+.auto-checkbox div[data-testid="stCheckbox"] label p {
+    margin-bottom: 0px;
+}
+.auto-checkbox div[data-testid="stCheckbox"] svg {
+    width: 14px;
+    height: 14px;
 }
 
-/* Tombol Predict - AFTER click (active) */
-.predict-btn.active div.stButton > button {
-    background-color: #1f6ac4 !important;   /* biru lebih gelap */
+/* Caption checkbox */
+div[data-testid="stCheckbox"] label {
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+/.horizon-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* BUTTON DEFAULT */
+.horizon-btn {
+    background-color: #020617;
+    color: #E5E7EB;
+    border: 1px solid #2D3648;
+    padding: 6px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* HOVER */
+.horizon-btn:hover {
+    background-color: #0F172A;
+}
+
+/* ACTIVE (dipilih) */
+.horizon-btn-active {
+    background-color: #2563EB !important;
     color: white !important;
-    border-radius: 18px !important;
-    padding: 10px 32px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    width: 100% !important;
+    border-color: #2563EB !important;
+}
+            
+/* Download button biru */
+div[data-testid="stDownloadButton"] > button {
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border-radius: 999px;
+    border: none;
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+div[data-testid="stDownloadButton"] > button:disabled {
+    background-color: #111827;
+    color: #9CA3AF;
 }
 
-/* Hover state (optional) */
-.predict-btn.inactive div.stButton > button:hover {
-    background-color: #2f8ef0 !important;
+/* Sub label kecil (Last updated, dll) */
+.sub-label {
+    font-size: 13px;
+    color: #9CA3AF;
 }
 
-.predict-btn.active div.stButton > button:hover {
-    background-color: #1d5faf !important;
-}
+</style>
+""", unsafe_allow_html=True)
 
+# Trick anti-hilang saat rerender
+st.write("")  
 
-
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 with st.sidebar:
     logo_path = BASE_DIR / "images" / "logo bri ai.png"
