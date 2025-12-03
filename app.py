@@ -208,33 +208,22 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
 }
 
 
-/* ===== TOMBOL PREDICT KHUSUS ===== */
-/* .predict-btn -> div setelahnya (stButton) -> button */
-.predict-btn + div.stButton > button {
-    background-color: #2587E2 !important;   /* biru */
-    color: #FFFFFF !important;
-    border-radius: 999px !important;
-    padding: 10px 32px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: 0.2s ease-in-out !important;
+//* TOMBOL PREDICT (dan tombol lain dari st.button) */
+div.stButton > button {
+    background-color: #2587E2;
+    color: #FFFFFF;
+    border-radius: 999px;
+    padding: 10px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* hover */
-.predict-btn + div.stButton > button:hover {
-    background-color: #1D4ED8 !important;
-    box-shadow: 0 4px 12px rgba(37, 135, 226, 0.35) !important;
+div.stButton > button:hover {
+    background-color: #1D4ED8;
 }
-
-/* active (di-klik) */
-.predict-btn + div.stButton > button:active {
-    background-color: #1A3FA0 !important;
-    transform: scale(0.97) !important;
-}
-
-
 
 
 /* Auto-update dibuat seperti pill */
