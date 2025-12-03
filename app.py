@@ -255,35 +255,36 @@ div[data-testid="stCheckbox"] label {
     font-size: 14px;
 }
 
-/.horizon-buttons {
-    display: flex;
-    gap: 10px;
+/* Horizon chips (radio) */
+.horizon-row {
+    margin-top: 0;
 }
-
-/* BUTTON DEFAULT */
-.horizon-btn {
-    background-color: #020617;
-    color: #E5E7EB;
-    border: 1px solid #2D3648;
-    padding: 6px 20px;
+div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
+    display: flex;
+    gap: 5px;
+}
+div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label {
+    padding: 6px 18px;
     border-radius: 999px;
     font-size: 14px;
+    background-color: #020617;
+    color: #E5E7EB;
     cursor: pointer;
-    transition: 0.2s;
 }
-
-/* HOVER */
-.horizon-btn:hover {
+div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:hover {
     background-color: #0F172A;
 }
-
-/* ACTIVE (dipilih) */
-.horizon-btn-active {
+div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     background-color: #2563EB !important;
-    color: white !important;
     border-color: #2563EB !important;
+    color: #FFFFFF !important;
 }
-            
+div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
 /* Download button biru */
 div[data-testid="stDownloadButton"] > button {
     background-color: #2563EB;
