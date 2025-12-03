@@ -49,7 +49,12 @@ def render_forecasting_page() -> None:
     if "forecast_has_run" not in st.session_state:
         st.session_state["forecast_has_run"] = False
 
+    # state untuk menentukan tampilan: awal atau hasil
+    if "forecast_show_results" not in st.session_state:
+        st.session_state["forecast_show_results"] = False
+
     current_horizon = st.session_state["forecast_horizon_days"]
+
 
     # ================== WRAP DI MAIN CARD ==================
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
@@ -86,12 +91,21 @@ def render_forecasting_page() -> None:
         c_predict, c_auto = st.columns([0.5, 0.5])
 
         predict_clicked = False
+        back_clicked = False
 
-        # tombol Predict (dibungkus predict-btn supaya CSS nempel)
+        # tombol Predict / Kembali (dibungkus predict-btn supaya CSS nempel)
         with c_predict:
             st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-            if st.button("Predict", key="forecast_predict"):
-                predict_clicked = True
+
+            if st.session_state["forecast_show_results"]:
+                # SESUDAH PREDICT: tampilkan tombol Kembali
+                if st.button("Kembali", key="forecast_back"):
+                    back_clicked = True
+            else:
+                # SEBELUM PREDICT: tampilkan tombol Predict
+                if st.button("Predict", key="forecast_predict"):
+                    predict_clicked = True
+
             st.markdown("</div>", unsafe_allow_html=True)
 
         # checkbox Auto-update
@@ -154,14 +168,24 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-    # ================= KAPAN RUN_FORECAST DIPANGGIL =================
+        # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
+
+    # 0) user klik Kembali -> reset ke awal
+    if back_clicked:
+        st.session_state["forecast_data"] = None
+        st.session_state["forecast_last_horizon"] = None
+        st.session_state["forecast_has_run"] = False
+        st.session_state["forecast_show_results"] = False
+        st.session_state["forecast_horizon_days"] = 7
+        data = None
 
     # 1) user klik Predict
-    if predict_clicked:
+    elif predict_clicked:
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
         st.session_state["forecast_has_run"] = True
+        st.session_state["forecast_show_results"] = True
 
     # 2) sudah pernah klik Predict lalu ganti horizon
     elif (
@@ -171,10 +195,12 @@ def render_forecasting_page() -> None:
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
+        st.session_state["forecast_show_results"] = True
 
     # 3) tidak ada perubahan
     else:
         data = st.session_state["forecast_data"]
+
 
     # ================== AMBIL DATA DARI STATE ==================
     data = st.session_state["forecast_data"]
