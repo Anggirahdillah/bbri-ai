@@ -93,21 +93,20 @@ def render_forecasting_page() -> None:
         predict_clicked = False
         back_clicked = False
 
-       with c_predict:
-    if st.session_state["forecast_show_results"]:
-        # SESUDAH PREDICT —> Tampilkan tombol Kembali
-        st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-        if st.button("Kembali", key="forecast_back"):
-            back_clicked = True
-        st.markdown("</div>", unsafe_allow_html=True)
+        # tombol Predict / Kembali (dibungkus predict-btn supaya CSS nempel)
+        with c_predict:
+            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 
-    else:
-        # SEBELUM PREDICT —> Tampilkan tombol Predict
-        st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-        if st.button("Predict", key="forecast_predict"):
-            predict_clicked = True
-        st.markdown("</div>", unsafe_allow_html=True)
+            if st.session_state["forecast_show_results"]:
+                # SESUDAH PREDICT: tampilkan tombol Kembali
+                if st.button("Kembali", key="forecast_back"):
+                    back_clicked = True
+            else:
+                # SEBELUM PREDICT: tampilkan tombol Predict
+                if st.button("Predict", key="forecast_predict"):
+                    predict_clicked = True
 
+            st.markdown("</div>", unsafe_allow_html=True)
 
         # checkbox Auto-update
         with c_auto:
