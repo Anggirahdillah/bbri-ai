@@ -203,10 +203,9 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     margin-top: 28px;
 }
 .empty-card {
-    background: #020617;
+    background: #252B31;
     border-radius: 18px;
     padding: 40px 20px;
-    border: 1px solid #2D3648;
     text-align: center;
 }
 
