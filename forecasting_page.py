@@ -49,7 +49,9 @@ def render_forecasting_page() -> None:
     if "forecast_has_run" not in st.session_state:
         st.session_state["forecast_has_run"] = False
 
-
+    # state untuk menentukan tampilan: awal atau hasil
+    if "forecast_show_results" not in st.session_state:
+        st.session_state["forecast_show_results"] = False
 
     current_horizon = st.session_state["forecast_horizon_days"]
 
@@ -88,24 +90,25 @@ def render_forecasting_page() -> None:
         st.markdown('<div class="control-row">', unsafe_allow_html=True)
         c_predict, c_auto = st.columns([0.5, 0.5])
 
-        # default nilai klik
         predict_clicked = False
         back_clicked = False
 
-        # ========== TOMBOL PREDICT / KEMBALI ==========
+        # tombol Predict / Kembali (dibungkus predict-btn supaya CSS nempel)
         with c_predict:
-            if st.session_state["forecast_show_results"]:
-                # SESUDAH PREDICT -> tampilkan tombol Kembali
-                st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-                back_clicked = st.button("Kembali", key="forecast_back")
-                st.markdown("</div>", unsafe_allow_html=True)
-            else:
-                # SEBELUM PREDICT -> tampilkan tombol Predict
-                st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-                predict_clicked = st.button("Predict", key="forecast_predict")
-                st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 
-        # ========== CHECKBOX AUTO UPDATE ==========
+            if st.session_state["forecast_show_results"]:
+                # SESUDAH PREDICT: tampilkan tombol Kembali
+                if st.button("Kembali", key="forecast_back"):
+                    back_clicked = True
+            else:
+                # SEBELUM PREDICT: tampilkan tombol Predict
+                if st.button("Predict", key="forecast_predict"):
+                    predict_clicked = True
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # checkbox Auto-update
         with c_auto:
             st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
             st.checkbox("Auto-update", value=False, key="forecast_auto_update")
@@ -113,7 +116,7 @@ def render_forecasting_page() -> None:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # ========== HORIZON CHIPS ==========
+        # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
         h_label_col, h_radio_col = st.columns([0.32, 1.8])
 
