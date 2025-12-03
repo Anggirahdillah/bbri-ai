@@ -253,25 +253,28 @@ def render_forecasting_page() -> None:
 
         with h_label_col:
             st.markdown(
-                '<p style="color:#E5E7EB;font-size:14px;margin-top:5px;">Horizon:</p>',
+                '<p style="color:#D5D7F8;font-size:28-px;margin-top:5px;">Horizon:</p>',
                 unsafe_allow_html=True,
             )
 
         with h_radio_col:
             label_map = {7: "7D", 14: "14D", 30: "30D"}
-            reverse_map = {"7D": 7, "14D": 14, "30D": 30}
-            current_label = label_map.get(current_horizon, "7D")
+    reverse_map = {"7D": 7, "14D": 14, "30D": 30}
 
-            selected_label = st.radio(
-                "forecast-horizon",
-                ["7D", "14D", "30D"],
-                index=["7D", "14D", "30D"].index(current_label),
-                horizontal=True,
-                label_visibility="collapsed",
-            )
-            st.session_state["forecast_horizon_days"] = reverse_map[selected_label]
-            current_horizon = reverse_map[selected_label]
-        st.markdown("</div>", unsafe_allow_html=True)
+    # radio pegang state-nya sendiri lewat key
+    selected_label = st.radio(
+        "forecast-horizon",
+        ["7D", "14D", "30D"],
+        key="forecast_horizon_radio",
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+
+    # sekali klik langsung update horizon aktif
+    current_horizon = reverse_map[selected_label]
+    st.session_state["forecast_horizon_days"] = current_horizon
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # sisi kanan header: last updated & model
     if st.session_state["forecast_data"] is not None:
@@ -352,14 +355,6 @@ def render_forecasting_page() -> None:
     forecast_summary: dict = data["forecast_summary"]
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
-        # siapkan bytes untuk download plot
-    plot_bytes = None
-    if price_fig is not None:
-        try:
-            plot_bytes = price_fig.to_image(format="png")
-        except Exception:
-            plot_bytes = None
-
 
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
