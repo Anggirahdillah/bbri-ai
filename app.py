@@ -216,21 +216,41 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
 }
 
 
-//* TOMBOL PREDICT (dan tombol lain dari st.button) */
-div.stButton > button {
-    background-color: #2587E2;
-    color: #FFFFFF;
-    border-radius: 999px;
-    padding: 10px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+.predict-btn, .back-btn {
+    display: inline-block;
+    width: 100%;
 }
 
-div.stButton > button:hover {
-    background-color: #1D4ED8;
+/* TOMBOL PREDICT */
+.predict-btn div.stButton > button {
+    background-color: #2587E2 !important; 
+    color: white !important;
+    border-radius: 18px !important;
+    padding: 10px 32px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border: 1px solid #1f3b5b !important;
+    transition: 0.2s ease-in-out;
+}
+
+.predict-btn div.stButton > button:hover {
+    background-color: #1f6bb6 !important;
+}
+
+/* TOMBOL KEMBALI */
+.back-btn div.stButton > button {
+    background-color: #1F2A33 !important; 
+    color: #FFFFFF !important;
+    border-radius: 18px !important;
+    padding: 10px 32px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border: 1px solid #3a4754 !important;
+    transition: 0.2s ease-in-out;
+}
+
+.back-btn div.stButton > button:hover {
+    background-color: #26323d !important;
 }
 
 
