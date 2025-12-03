@@ -3,37 +3,45 @@ from typing import Optional
 import streamlit as st
 import pandas as pd
 
-from forecasting_engine import run_forecast  # pastikan file ini ada ya
+from forecasting_engine import run_forecast
 
 
 # =============== CSS KHUSUS HALAMAN FORECASTING ===============
 st.markdown("""
 <style>
+/* CARD UTAMA TENGAH */
 .main-card {
     background-color: #111827;
-    padding: 25px 30px;
-    border-radius: 24px;
+    padding: 28px 34px 30px 34px;
+    border-radius: 26px;
+    max-width: 1000px;
+    margin: 32px auto 40px auto;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.65);
+    border: 1px solid #1f2937;
 }
 
 /* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
 .small-card {
     background-color: #252B31;
     padding: 18px 20px;
-    border-radius: 14px;
+    border-radius: 16px;
 }
 
 /* Kartu besar bawah (chart + tabel) */
 .bottom-card {
     background-color: #252B31;
     padding: 18px 20px;
-    border-radius: 14px;
+    border-radius: 16px;
     height: 100%;
 }
 
-/* Empty state */
+/* Empty state di tengah card */
+.empty-card-wrapper {
+    margin-top: 28px;
+}
 .empty-card {
     background-color: #252B31;
-    padding: 40px 20px;
+    padding: 46px 20px;
     border-radius: 18px;
     text-align: center;
     color: #C9D1D9;
@@ -47,33 +55,23 @@ st.markdown("""
 
 /* Judul di dalam card (biru seperti Figma) */
 .card-title {
-    font-size: 16px;
+    font-size: 15px;
     color: #2587E2;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-/* Chips Horizon di header (7D 14D 30D) */
-.horizon-chip {
-    background-color: #252B31;
-    color: #D5D7F8;
-    padding: 6px 14px;
+/* CONTROL BAR: Predict + Auto update */
+.control-row {
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+/* Tombol Predict ala Figma */
+.predict-btn div.stButton > button {
+    background-color: #2587E2;
+    color: #FFFFFF;
     border-radius: 999px;
-    font-size: 14px;
-    border: 1px solid #374151;
-    margin-right: 4px;
-}
-.horizon-chip.active {
-    background-color: #2587E2;
-    border-color: #2587E2;
-    color:white;
-}
-
-/* Tombol Predict */
-div.stButton > button {
-    background-color: #2587E2;
-    color: white;
-    border-radius: 18px;
     padding: 10px 32px;
     font-size: 16px;
     font-weight: 600;
@@ -81,29 +79,53 @@ div.stButton > button {
     cursor: pointer;
     transition: 0.25s;
 }
-div.stButton > button:hover {
+.predict-btn div.stButton > button:hover {
     background-color: #2f8ef0;
 }
 
-/* Checkbox Auto-update */
-div[data-testid="stCheckbox"] label {
-    color: #FFFFFF;
-    font-size: 15px;
+/* Checkbox Auto update dibuat seperti pill abu */
+div.auto-checkbox div[data-testid="stCheckbox"] > label {
+    background-color: #252B31;
+    border-radius: 999px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border: 1px solid #374151;
+}
+div.auto-checkbox div[data-testid="stCheckbox"] label p {
+    margin-bottom: 0px;
+}
+div.auto-checkbox div[data-testid="stCheckbox"] svg {
+    width: 14px;
+    height: 14px;
 }
 
-/* Radio horizon di bawah chart (kalau dipakai nanti) */
+/* Caption checkbox */
+div[data-testid="stCheckbox"] label {
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+/* HORIZON CHIP (radio) */
+.horizon-row {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+/* styling radio horizon */
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
     display: flex !important;
     gap: 10px;
-    justify-content: center;
 }
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label {
-    padding: 6px 16px;
+    padding: 6px 18px;
     border-radius: 999px;
     font-size: 14px;
-    background-color: #111827;
+    background-color: #252B31;
     border: 1px solid #374151;
-    color: #E5E7EB;
+    color: #D5D7F8;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -113,12 +135,35 @@ div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup']
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     background-color: #2587E2 !important;
     border-color: #2587E2 !important;
-    color: white !important;
+    color: #FFFFFF !important;
 }
 div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] input[type="radio"] {
     opacity: 0;
     position: absolute;
     pointer-events: none;
+}
+
+/* Download button biru ala Figma */
+div[data-testid="stDownloadButton"] > button {
+    background-color: #2587E2;
+    color: #FFFFFF;
+    border-radius: 999px;
+    border: none;
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+div[data-testid="stDownloadButton"] > button:disabled {
+    background-color: #1f2937;
+    color: #9CA3AF;
+}
+
+/* Judul chart */
+.chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #E5E7EB;
+    margin-bottom: 8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -126,17 +171,14 @@ div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup']
 
 # =============== HALAMAN FORECASTING ===============
 def render_forecasting_page() -> None:
-    """
-    Halaman Forecasting BBRI.
-    """
-
-    # ---------- INIT STATE ----------
+    # inisialisasi state
     if "forecast_data" not in st.session_state:
         st.session_state["forecast_data"] = None
 
     if "forecast_horizon_days" not in st.session_state:
         st.session_state["forecast_horizon_days"] = 7  # default 7D
 
+    # horizon terakhir yang dipakai untuk load data
     if "forecast_last_horizon" not in st.session_state:
         st.session_state["forecast_last_horizon"] = None
 
@@ -145,47 +187,62 @@ def render_forecasting_page() -> None:
 
     current_horizon = st.session_state["forecast_horizon_days"]
 
+    # ================== WRAP DI MAIN CARD ==================
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
     # ================= HEADER =================
     top_left, top_right = st.columns([3, 2])
 
-    # ----- kiri: title, tombol, horizon -----
     with top_left:
+        # Title dan sub title
         st.markdown(
             """
             <h1 style="
                 color:#2587E2;
-                font-size:46px;
+                font-size:32px;
                 font-weight:700;
-                margin:0 0 8px 0;">
+                margin:0 0 4px 0;">
                 Forecasting BBRI
             </h1>
             <p style="
                 color:#FFFFFF;
-                font-size:24px;
+                font-size:16px;
                 font-weight:300;
-                margin-bottom:20px;">
+                margin-bottom:16px;">
                 Future Price Projection Powered by AI
             </p>
             """,
             unsafe_allow_html=True,
         )
 
-        col_btn, col_auto = st.columns([1, 1.4])
+        # Bar: Predict + Auto update
+        st.markdown('<div class="control-row">', unsafe_allow_html=True)
+        c_predict, c_auto = st.columns([0.7, 1.2])
 
-        # tombol Predict
         predict_clicked = False
-        with col_btn:
+        with c_predict:
             st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
             if st.button("Predict", key="forecast_predict"):
                 predict_clicked = True
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # auto-update + horizon radio (chip)
-        with col_auto:
-            st.checkbox("Auto-update", value=False)
+        with c_auto:
+            st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
+            st.checkbox("Auto-update", value=False, key="forecast_auto_update")
+            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
+        # Horizon chips
+        st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
+        h_label_col, h_radio_col = st.columns([0.32, 1.8])
+
+        with h_label_col:
+            st.markdown(
+                '<p style="color:#E5E7EB;font-size:14px;margin-top:5px;">Horizon:</p>',
+                unsafe_allow_html=True,
+            )
+
+        with h_radio_col:
             label_map = {7: "7D", 14: "14D", 30: "30D"}
             reverse_map = {"7D": 7, "14D": 14, "30D": 30}
             current_label = label_map.get(current_horizon, "7D")
@@ -197,11 +254,11 @@ def render_forecasting_page() -> None:
                 horizontal=True,
                 label_visibility="collapsed",
             )
-
             st.session_state["forecast_horizon_days"] = reverse_map[selected_label]
             current_horizon = reverse_map[selected_label]
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # ----- kanan: last updated + model name -----
+    # sisi kanan header: last updated & model
     if st.session_state["forecast_data"] is not None:
         last_updated = st.session_state["forecast_data"]["last_updated"]
         best_model = st.session_state["forecast_data"]["model_name"]
@@ -212,11 +269,11 @@ def render_forecasting_page() -> None:
     with top_right:
         st.markdown(
             f"""
-            <div style="text-align:right;margin-top:12px;">
+            <div style="text-align:right;margin-top:6px;">
                 <p class="sub-label" style="margin:0 0 4px 0;">
                     Last updated : {last_updated}
                 </p>
-                <p class="sub-label" style="margin:0;">
+                <p class="sub-label" style="margin:0 0 30px 0;">
                     Model Used : {best_model}
                 </p>
             </div>
@@ -224,17 +281,16 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-    # ================= LOGIC PANGGIL run_forecast =================
-    data = st.session_state["forecast_data"]
+    # ================= KAPAN RUN_FORECAST DIPANGGIL =================
 
-    # 1) User baru klik Predict
+    # 1) user klik Predict
     if predict_clicked:
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
         st.session_state["forecast_has_run"] = True
 
-    # 2) Sudah pernah Predict, tapi horizon berubah (7D -> 14D / 30D)
+    # 2) sudah pernah klik Predict lalu ganti horizon
     elif (
         st.session_state["forecast_has_run"]
         and st.session_state["forecast_last_horizon"] != current_horizon
@@ -243,25 +299,28 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
 
-    # kalau tidak, pakai data yang sudah ada (data sudah diambil di awal)
+    # 3) tidak ada perubahan
+    else:
+        data = st.session_state["forecast_data"]
 
-    st.write("")
+    # ================== AMBIL DATA DARI STATE ==================
+    data = st.session_state["forecast_data"]
 
-    # ================= EMPTY STATE =================
+    # EMPTY STATE
     if (
         data is None
-        or "forecast_df" not in data
         or data["forecast_df"] is None
         or len(data["forecast_df"]) == 0
     ):
+        st.markdown('<div class="empty-card-wrapper">', unsafe_allow_html=True)
         st.markdown(
             """
             <div class="empty-card">
-                <h3 style="font-size:28px;font-weight:600;margin-bottom:8px;
+                <h3 style="font-size:20px;font-weight:600;margin-bottom:6px;
                            font-family:'Inter', sans-serif; color:#FFFFFF;">
                     No forecast generated yet
                 </h3>
-                <p style="font-size:14px;color:#818181; margin:0;">
+                <p style="font-size:13px;color:#9CA3AF; margin:0;">
                     Click "Predict" to run the model and see the results.
                 </p>
             </div>
@@ -269,21 +328,21 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
         st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # tutup main-card
         return
 
-    # ================= UNPACK DATA =================
+    # ========== KALAU ADA DATA ==========
     forecast_df: pd.DataFrame = data["forecast_df"]
     today_overview: dict = data["today_overview"]
     forecast_summary: dict = data["forecast_summary"]
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
 
-    # update horizon state dari hasil summary
-    current_horizon = forecast_summary.get("horizon_days", current_horizon)
+    # update horizon dari hasil model
+    current_horizon = forecast_summary.get("horizon_days", 7)
     st.session_state["forecast_horizon_days"] = current_horizon
-    st.session_state["forecast_last_horizon"] = current_horizon
 
-    # ================= 3 METRIC CARDS =================
+    # ================== METRIC ROW ==================
     c1, c2, c3 = st.columns(3)
 
     with c1:
@@ -291,14 +350,14 @@ def render_forecasting_page() -> None:
             f"""
             <div class="small-card">
                 <p class="card-title">Today Overview</p>
-                <p style="font-size:14px;color:#E5E7EB;margin:0;">Last Close</p>
+                <p style="font-size:13px;color:#E5E7EB;margin:0;">Last Close</p>
                 <p style="font-size:20px;font-weight:700;margin:0;">
                     {today_overview.get("last_close", "-")}
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:2px 0 0 0;">
                     Change: {today_overview.get("change_pct","-")}%
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     Volume: {today_overview.get("volume","-")}
                 </p>
             </div>
@@ -311,13 +370,13 @@ def render_forecasting_page() -> None:
             f"""
             <div class="small-card">
                 <p class="card-title">Forecast Summary</p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     Horizon: {forecast_summary.get("horizon_days","-")} Days
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     End Price: {forecast_summary.get("end_price","-")}
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     Avg Daily Change: {forecast_summary.get("avg_daily_change","-")}%</p>
             </div>
             """,
@@ -329,13 +388,13 @@ def render_forecasting_page() -> None:
             f"""
             <div class="small-card">
                 <p class="card-title">Model Evaluation</p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     RMSE: {model_eval.get("rmse","-")}
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     MAE: {model_eval.get("mae","-")}
                 </p>
-                <p style="font-size:13px;color:#9CA3AF;margin:0;">
+                <p style="font-size:12px;color:#9CA3AF;margin:0;">
                     MAPE: {model_eval.get("mape","-")}%</p>
             </div>
             """,
@@ -344,15 +403,14 @@ def render_forecasting_page() -> None:
 
     st.write("")
 
-    # ================= CHART + TABLE =================
-    left, right = st.columns([1.3, 1])
+    # ================== CHART + TABLE ==================
+    left, right = st.columns([1.35, 1])
 
-    # ----- kiri: chart -----
     with left:
         st.markdown(
             """
             <div class="bottom-card">
-                <p class="card-title">Historical vs Forecasted Price</p>
+                <p class="chart-title">Historical vs Forecasted Price</p>
             """,
             unsafe_allow_html=True,
         )
@@ -368,58 +426,38 @@ def render_forecasting_page() -> None:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ----- kanan: table + download -----
     with right:
         st.markdown(
             """
             <div class="bottom-card">
-                <p class="card-title">Forecast Table</p>
+                <p class="chart-title">Forecast Table</p>
             """,
             unsafe_allow_html=True,
         )
 
-        # table
         df_show = forecast_df[["date", "forecasted", "lower_bound", "upper_bound"]].copy()
         df_show.columns = ["Date", "Forecasted", "Lower Bound", "Upper Bound"]
 
-        st.dataframe(df_show, use_container_width=True, height=260)
+        st.dataframe(df_show, use_container_width=True, height=240)
 
-        # CSV bytes
         csv_bytes = df_show.to_csv(index=False).encode("utf-8")
 
-        # PNG bytes dari plot (butuh kaleido terinstall)
-        plot_bytes = None
-        if price_fig is not None:
-            try:
-                plot_bytes = price_fig.to_image(
-                    format="png",
-                    width=1100,
-                    height=450,
-                    scale=2,
-                )
-            except Exception:
-                plot_bytes = None
-                st.warning("Gagal membuat plot PNG. Install dulu: pip install -U kaleido")
-
         col1, col2 = st.columns(2)
-
         with col1:
             st.download_button(
                 "Download Plot",
-                data=plot_bytes if plot_bytes else b"",
-                file_name=f"forecast_{current_horizon}d.png",
-                mime="image/png",
-                disabled=(plot_bytes is None),
+                b"",
+                file_name="plot.png",
+                disabled=True,
             )
-
         with col2:
             st.download_button(
                 "Download CSV",
-                data=csv_bytes,
-                file_name=f"forecast_bri_{current_horizon}d.csv",
+                csv_bytes,
+                file_name="forecast_bbri.csv",
                 mime="text/csv",
             )
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)  # tutup main-card
+    st.markdown("</div>", unsafe_allow_html=True)  # tutup .main-card
