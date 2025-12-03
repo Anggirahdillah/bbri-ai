@@ -67,7 +67,7 @@ def render_forecasting_page() -> None:
                 color:#2587E2;
                 font-size:46px;
                 font-weight:700;
-                margin:0 0 4px 0;
+                margin:0 0 0 0;
             ">
                 Forecasting BBRI
             </h1>
