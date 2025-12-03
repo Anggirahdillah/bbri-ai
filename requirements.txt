@@ -19,3 +19,4 @@ tqdm
 
 plotly
 Pillow
+kaleido
