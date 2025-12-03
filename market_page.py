@@ -378,7 +378,7 @@ def render_market_overview(_data_dict):
             price_fig = build_price_chart(df, ticker)
             price_fig.update_layout(
                 height=320,
-                margin=dict(l=150, r=0, t=10, b=0),
+                margin=dict(l=200, r=0, t=10, b=0),
             )
             st.plotly_chart(
                 price_fig,
