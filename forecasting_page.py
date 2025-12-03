@@ -22,7 +22,7 @@ st.markdown("""
 
 /* ========= METRIC CARDS ========= */
 .small-card {
-    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+    background: #252B31;
     border-radius: 16px;
     padding: 20px 24px;
     border: 1px solid #2D3648;
