@@ -14,13 +14,11 @@ st.markdown(
 <style>
 /* CARD UTAMA TENGAH */
 .main-card {
-    background-color: #020617;
+    background-color: #252B31;
     padding: 28px 34px 30px 34px;
     border-radius: 26px;
     max-width: 1120px;
     margin: 32px auto 40px auto;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.75);
-    border: 1px solid #1f2937;
 }
 
 /* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
