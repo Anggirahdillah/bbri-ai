@@ -337,7 +337,7 @@ def render_market_overview(_data_dict):
 
         st.markdown(
             f"""
-            <div class="metric-card">
+            <div class="metric-card-change">
                 <p style="
                     color:#2587E2;
                     font-family: Inter, sans-serif;
