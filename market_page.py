@@ -366,7 +366,7 @@ def render_market_overview(_data_dict):
                     color:#2587E2;
                     font-size:32px;
                     text-align:center;
-                    margin-bottom:10px;
+                    margin-bottom:20px;
                 ">
                     Price Trend
                 </p>
