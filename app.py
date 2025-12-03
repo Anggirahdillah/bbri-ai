@@ -65,7 +65,7 @@ p,span,label {
     border-radius: 20px;
     margin: 10px 10px 10px 0;
 }
-.metric-card-low, {
+.metric-card-low {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
