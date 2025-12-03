@@ -49,6 +49,8 @@ def render_forecasting_page() -> None:
     if "forecast_has_run" not in st.session_state:
         st.session_state["forecast_has_run"] = False
 
+
+
     current_horizon = st.session_state["forecast_horizon_days"]
 
 
@@ -86,33 +88,28 @@ def render_forecasting_page() -> None:
         st.markdown('<div class="control-row">', unsafe_allow_html=True)
         c_predict, c_auto = st.columns([0.5, 0.5])
 
-        # flag klik
+        # default nilai klik
         predict_clicked = False
         back_clicked = False
 
-        # cek apakah sudah ada hasil forecast
-        has_results = (
-            st.session_state.get("forecast_data") is not None
-            and st.session_state.get("forecast_has_run", False)
-        )
-
-        # ========== TOMBOL PREDICT ==========
+        # ========== TOMBOL PREDICT / KEMBALI ==========
         with c_predict:
-            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-            predict_clicked = st.button("Predict", key="forecast_predict")
-            st.markdown("</div>", unsafe_allow_html=True)
+            if st.session_state["forecast_show_results"]:
+                # SESUDAH PREDICT -> tampilkan tombol Kembali
+                st.markdown('<div class="back-btn">', unsafe_allow_html=True)
+                back_clicked = st.button("Kembali", key="forecast_back")
+                st.markdown("</div>", unsafe_allow_html=True)
+            else:
+                # SEBELUM PREDICT -> tampilkan tombol Predict
+                st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+                predict_clicked = st.button("Predict", key="forecast_predict")
+                st.markdown("</div>", unsafe_allow_html=True)
 
-        # ========== AUTO UPDATE + KEMBALI ==========
+        # ========== CHECKBOX AUTO UPDATE ==========
         with c_auto:
             st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
             st.checkbox("Auto-update", value=False, key="forecast_auto_update")
             st.markdown("</div>", unsafe_allow_html=True)
-
-            # tombol kembali muncul hanya kalau sudah ada hasil
-            if has_results:
-                st.markdown('<div class="back-btn" style="margin-top:8px;">', unsafe_allow_html=True)
-                back_clicked = st.button("Kembali", key="forecast_back")
-                st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -170,35 +167,36 @@ def render_forecasting_page() -> None:
 
         # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
 
-      # ================= RUN / RESET FORECAST =================
-
+    # 0) user klik Kembali -> reset ke awal
     if back_clicked:
-        # RESET KE EMPTY STATE
         st.session_state["forecast_data"] = None
         st.session_state["forecast_last_horizon"] = None
         st.session_state["forecast_has_run"] = False
+        st.session_state["forecast_show_results"] = False
         st.session_state["forecast_horizon_days"] = 7
         data = None
 
+    # 1) user klik Predict
     elif predict_clicked:
-        # JALANKAN FORECAST
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
         st.session_state["forecast_has_run"] = True
+        st.session_state["forecast_show_results"] = True
 
+    # 2) sudah pernah klik Predict lalu ganti horizon
     elif (
         st.session_state["forecast_has_run"]
         and st.session_state["forecast_last_horizon"] != current_horizon
     ):
-        # HORIZON DIGANTI SETELAH PERNAH RUN
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
+        st.session_state["forecast_show_results"] = True
 
+    # 3) tidak ada perubahan
     else:
         data = st.session_state["forecast_data"]
-
 
 
     # ================== AMBIL DATA DARI STATE ==================
