@@ -65,13 +65,22 @@ p,span,label {
     border-radius: 20px;
     margin: 10px 10px 10px 0;
 }
-.metric-card-low, .metric-card-high {
+.metric-card-low, {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
     margin: 10px 20px 10px 0;
     width: 250px;
 }
+
+.metric-card-high {
+background-color: #252B31;
+    padding: 10px 25px;
+    border-radius: 20px;
+    margin: 10px 0 10px 20px;
+    width: 250px;
+)
+
 .metric-card-change {
     background-color: #252B31;
     padding: 10px 25px;
