@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import pickle
+import yfinance as yf   # <== penting: pastikan ada di requirements.txt
 
 
 # ======================= ENGINE UTAMA =======================
@@ -13,24 +14,45 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
     """
     Engine forecast sederhana untuk BBRI.
 
-    - Historical: data/data_saham_bbri_jk*.csv
-    - Evaluasi model: data/model_evaluation_result.csv
-    - (opsional) Meta model: models/best_model_meta.pkl
-    - Forecast: naive + drift dari data historis (bisa diganti dengan model asli)
+    - Historical:
+        1) Coba baca dari data/data_saham_bbri_jk*.csv
+        2) Kalau tidak ada, fallback ambil dari yfinance (ticker argument)
+    - Evaluasi model: data/model_evaluation_result.csv (kalau ada)
+    - Meta model: models/best_model_meta.pkl (kalau ada)
+    - Forecast: naive + drift dari data historis
     """
 
     # ========== 1. LOAD HISTORICAL ========== #
-    # cari file yang namanya diawali 'data_saham_bbri_jk'
-    hist_path = None
+    hist = None
     data_dir = "data"
+
+    # 1A. Coba cari file lokal lebih dulu
+    hist_path = None
     if os.path.isdir(data_dir):
         for fname in os.listdir(data_dir):
             if fname.lower().startswith("data_saham_bbri_jk"):
                 hist_path = os.path.join(data_dir, fname)
                 break
 
-    if hist_path is None or not os.path.exists(hist_path):
-        # fallback: kalau ga ketemu, balikin kosong
+    if hist_path is not None and os.path.exists(hist_path):
+        try:
+            hist = pd.read_csv(hist_path)
+        except Exception:
+            hist = None
+
+    # 1B. Kalau file lokal tidak ada / gagal dibaca, fallback ke yfinance
+    if hist is None:
+        try:
+            yf_df = yf.download(ticker, period="6mo")  # ambil 6 bulan terakhir
+            if not yf_df.empty:
+                yf_df = yf_df.reset_index()
+                yf_df.rename(columns={"Date": "date", "Close": "close", "Volume": "volume"}, inplace=True)
+                hist = yf_df
+        except Exception:
+            hist = None
+
+    # 1C. Kalau tetap tidak dapat data
+    if hist is None or hist.empty:
         empty_df = pd.DataFrame(columns=["date", "forecasted", "lower_bound", "upper_bound"])
         return {
             "forecast_df": empty_df,
@@ -42,21 +64,24 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
             "model_name": "LightGBM",
         }
 
-    hist = pd.read_csv(hist_path)
-
     # Normalisasi nama kolom
-    # asumsikan ada kolom tanggal & close, adjust kalau beda
     cols_lower = [c.lower() for c in hist.columns]
-    col_date = hist.columns[cols_lower.index("date")] if "date" in cols_lower else hist.columns[0]
-    # coba cari 'close' / 'close_price'
+
+    # kolom tanggal
+    if "date" in cols_lower:
+        col_date = hist.columns[cols_lower.index("date")]
+    else:
+        col_date = hist.columns[0]
+
+    # kolom close
     if "close" in cols_lower:
         col_close = hist.columns[cols_lower.index("close")]
     elif "close_price" in cols_lower:
         col_close = hist.columns[cols_lower.index("close_price")]
     else:
-        # kalau ga ada, pakai kolom terakhir sebagai harga
         col_close = hist.columns[-1]
 
+    # pastikan datetime dan sort
     hist[col_date] = pd.to_datetime(hist[col_date])
     hist = hist.sort_values(col_date)
 
@@ -72,12 +97,14 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
     change_pct = (last_close - prev_close) / prev_close * 100 if prev_close != 0 else 0.0
 
     # volume kalau ada
+    volume_str = "-"
     if "volume" in cols_lower:
         col_vol = hist.columns[cols_lower.index("volume")]
-        volume_val = float(last_row[col_vol])
-        volume_str = f"{volume_val:,.0f}"
-    else:
-        volume_str = "-"
+        try:
+            volume_val = float(last_row[col_vol])
+            volume_str = f"{volume_val:,.0f}"
+        except Exception:
+            volume_str = "-"
 
     today_overview = {
         "last_close": round(last_close, 2),
@@ -86,7 +113,6 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
     }
 
     # ========== 3. FORECAST (NAIVE + DRIFT) ========== #
-    # Pakai rata-rata return 20 hari terakhir sebagai drift
     close_series = hist[col_close].astype(float)
     returns = close_series.pct_change().dropna()
 
@@ -132,41 +158,53 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
         "avg_daily_change": round(avg_daily_change, 2),
     }
 
-    # ========== 5. MODEL EVALUATION DARI FILE ========== #
-    # misal: data/model_evaluation_result.csv
-    metrics_path = os.path.join("data", "model_evaluation_result.csv")
-    model_eval = {"rmse": 0.0, "mae": 0.0, "mape": 0.0}
+        # ========== 5. MODEL EVALUATION ========== #
+    # 5A. Hitung metrik berbasis data historis (naive one-step-ahead)
+    # forecast[t] = harga kemarin
+    actual = close_series.values
+    if len(actual) > 1:
+        preds = actual[:-1]          # prediksi = harga hari sebelumnya
+        y_true = actual[1:]          # actual = harga hari ini
+        errors = y_true - preds
+
+        rmse_val = float(np.sqrt(np.mean(errors ** 2)))
+        mae_val = float(np.mean(np.abs(errors)))
+        # MAPE hati-hati kalau ada 0
+        nonzero_mask = y_true != 0
+        if nonzero_mask.any():
+            mape_val = float(np.mean(np.abs(errors[nonzero_mask] / y_true[nonzero_mask])) * 100)
+        else:
+            mape_val = 0.0
+    else:
+        rmse_val = mae_val = mape_val = 0.0
+
+    model_eval = {
+        "rmse": round(rmse_val, 2),
+        "mae": round(mae_val, 2),
+        "mape": round(mape_val, 2),
+    }
+
     model_name = "LightGBM"
 
+    # 5B. Kalau ada file metrics, override dengan nilai di sana (opsional)
+    metrics_path = os.path.join("data", "model_evaluation_result.csv")
     if os.path.exists(metrics_path):
         try:
             metrics_df = pd.read_csv(metrics_path)
-            # ambil baris pertama
             row0 = metrics_df.iloc[0]
-            # sesuaikan nama kolom kalau beda
-            cols = [c.lower() for c in metrics_df.columns]
-            rmse_col = metrics_df.columns[cols.index("rmse")] if "rmse" in cols else None
-            mae_col = metrics_df.columns[cols.index("mae")] if "mae" in cols else None
-            mape_col = metrics_df.columns[cols.index("mape")] if "mape" in cols else None
+            cols_me = [c.lower() for c in metrics_df.columns]
+            rmse_col = metrics_df.columns[cols_me.index("rmse")] if "rmse" in cols_me else None
+            mae_col = metrics_df.columns[cols_me.index("mae")] if "mae" in cols_me else None
+            mape_col = metrics_df.columns[cols_me.index("mape")] if "mape" in cols_me else None
 
-            if rmse_col:
-                model_eval["rmse"] = float(row0[rmse_col])
-            if mae_col:
-                model_eval["mae"] = float(row0[mae_col])
-            if mape_col:
-                model_eval["mape"] = float(row0[mape_col])
+            if rmse_col is not None:
+                model_eval["rmse"] = round(float(row0[rmse_col]), 2)
+            if mae_col is not None:
+                model_eval["mae"] = round(float(row0[mae_col]), 2)
+            if mape_col is not None:
+                model_eval["mape"] = round(float(row0[mape_col]), 2)
         except Exception:
-            pass
-
-    # coba ambil nama model dari models/best_model_meta.pkl
-    meta_path = os.path.join("models", "best_model_meta.pkl")
-    if os.path.exists(meta_path):
-        try:
-            with open(meta_path, "rb") as f:
-                meta = pickle.load(f)
-            if isinstance(meta, dict) and "model_name" in meta:
-                model_name = meta["model_name"]
-        except Exception:
+            # kalau gagal baca, pakai hasil perhitungan tadi saja
             pass
 
     # ========== 6. FIGURE PLOTLY: HIST VS FORECAST ========== #
