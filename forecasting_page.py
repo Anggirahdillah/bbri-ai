@@ -356,6 +356,14 @@ def render_forecasting_page() -> None:
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
 
+    # siapkan bytes untuk download plot
+    plot_bytes = None
+    if price_fig is not None:
+        try:
+            plot_bytes = price_fig.to_image(format="png")  # butuh kaleido
+        except Exception:
+            plot_bytes = None
+
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
     st.session_state["forecast_horizon_days"] = current_horizon
@@ -507,17 +515,19 @@ def render_forecasting_page() -> None:
         with col1:
             st.download_button(
                 "Download Plot",
-                b"",
-                file_name="plot.png",
-                disabled=True,
+                data=plot_bytes if plot_bytes is not None else b"",
+                file_name="forecast_bbri_plot.png",
+                mime="image/png",
+                disabled=(plot_bytes is None),
             )
         with col2:
             st.download_button(
                 "Download CSV",
-                csv_bytes,
+                data=csv_bytes,
                 file_name="forecast_bbri.csv",
                 mime="text/csv",
             )
+
 
         st.markdown("</div>", unsafe_allow_html=True)
 
