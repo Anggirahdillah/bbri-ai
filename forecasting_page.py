@@ -2,6 +2,29 @@ import streamlit as st
 import pandas as pd
 from forecasting_engine import run_forecast
 
+st.markdown("""
+<style>
+div[data-test
+
+/* ================== MAIN BUTTON STYLE (PREDICT / KEMBALI DLL) ================== */
+div[data-testid="stAppViewContainer"] div.stButton > button {
+    background-color: #03529C;
+    color: #FFFFFF;
+    border-radius:20px;       /* pill */
+    padding: 15px 50px ;
+    font-size: 33px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 170px;
+    max-width: 171px;
+}
+
+/* hover */
+div[data-testid="stAppViewContainer"] div.stButton > button:hover {
+    background-color: #1f6bb6 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 def render_forecasting_page() -> None:
     # ========== INIT SESSION STATE ==========
