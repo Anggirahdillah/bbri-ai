@@ -1,42 +1,10 @@
-from typing import Optional
-
 import streamlit as st
 import pandas as pd
-from io import BytesIO
 from forecasting_engine import run_forecast
 
-# ================== PAGE CONFIG ==================
-st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
 
-# ================== GLOBAL CSS ==================
-st.markdown(
-    """
-<style>
-/* CARD UTAMA TENGAH */
-.main-card {
-    background-color: #252B31;
-    padding: 28px 34px 30px 34px;
-    border-radius: 26px;
-    max-width: 1120px;
-    margin: 32px auto 40px auto;
-}
-
-/* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
-.small-card {
-    background: #252B31;
-    border-radius: 16px;
-    padding: 20px 24px;
-}
-
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-
-# =============== HALAMAN FORECASTING ===============
 def render_forecasting_page() -> None:
-    # inisialisasi state
+    # ========== INIT SESSION STATE ==========
     if "forecast_data" not in st.session_state:
         st.session_state["forecast_data"] = None
 
@@ -49,12 +17,11 @@ def render_forecasting_page() -> None:
     if "forecast_has_run" not in st.session_state:
         st.session_state["forecast_has_run"] = False
 
-    # state untuk menentukan tampilan: awal atau hasil
+    # True = sedang lihat hasil forecast, False = state awal (no forecast)
     if "forecast_show_results" not in st.session_state:
         st.session_state["forecast_show_results"] = False
 
     current_horizon = st.session_state["forecast_horizon_days"]
-
 
     # ================== WRAP DI MAIN CARD ==================
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
@@ -62,6 +29,7 @@ def render_forecasting_page() -> None:
     # ================= HEADER =================
     top_left, top_right = st.columns([3, 2])
 
+    # ------------ KIRI: TITLE, BUTTON, HORIZON ------------
     with top_left:
         # Title dan sub title
         st.markdown(
@@ -86,16 +54,23 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-        # Bar: Predict + Auto update
-        st.markdown('<div class="control-row">', unsafe_allow_html=True)
+        # Bar: Predict / Kembali + Auto update
+       # Bar: Predict / Kembali + Auto update
+        st.markdown('<div class="control-row forecast-controls">', unsafe_allow_html=True)
+
         c_predict, c_auto = st.columns([0.5, 0.5])
 
         predict_clicked = False
         back_clicked = False
 
-        # tombol Predict / Kembali (dibungkus predict-btn supaya CSS nempel)
+        # Pilih CSS class sesuai mode: awal = predict-btn, setelah forecast = back-btn
+        btn_wrapper_class = (
+            "back-btn" if st.session_state["forecast_show_results"] else "predict-btn"
+        )
+
+        # tombol Predict / Kembali
         with c_predict:
-            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+            st.markdown(f'<div class="{btn_wrapper_class}">', unsafe_allow_html=True)
 
             if st.session_state["forecast_show_results"]:
                 # SESUDAH PREDICT: tampilkan tombol Kembali
@@ -108,7 +83,7 @@ def render_forecasting_page() -> None:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # checkbox Auto-update
+        # checkbox Auto-update (UI aja, belum dipakai)
         with c_auto:
             st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
             st.checkbox("Auto-update", value=False, key="forecast_auto_update")
@@ -145,7 +120,7 @@ def render_forecasting_page() -> None:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # sisi kanan header: last updated & model
+    # ------------ KANAN: LAST UPDATED & MODEL ------------
     if st.session_state["forecast_data"] is not None:
         last_updated = st.session_state["forecast_data"]["last_updated"]
         best_model = st.session_state["forecast_data"]["model_name"]
@@ -168,7 +143,7 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-        # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
+    # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
 
     # 0) user klik Kembali -> reset ke awal
     if back_clicked:
@@ -177,9 +152,11 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_has_run"] = False
         st.session_state["forecast_show_results"] = False
         st.session_state["forecast_horizon_days"] = 7
-        data = None
 
-    # 1) user klik Predict
+        # langsung rerun supaya tombol berubah jadi "Predict"
+        st.rerun()
+
+    # 1) user klik Predict (pertama kali atau setelah kembali)
     elif predict_clicked:
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
@@ -187,7 +164,10 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_has_run"] = True
         st.session_state["forecast_show_results"] = True
 
-    # 2) sudah pernah klik Predict lalu ganti horizon
+        # langsung rerun supaya tombol berubah jadi "Kembali" dan isi forecast muncul
+        st.rerun()
+
+    # 2) sudah pernah klik Predict lalu ganti horizon -> auto re-run
     elif (
         st.session_state["forecast_has_run"]
         and st.session_state["forecast_last_horizon"] != current_horizon
@@ -196,20 +176,17 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
         st.session_state["forecast_show_results"] = True
-
-    # 3) tidak ada perubahan
     else:
         data = st.session_state["forecast_data"]
-
 
     # ================== AMBIL DATA DARI STATE ==================
     data = st.session_state["forecast_data"]
 
-    # EMPTY STATE
+    # ================== EMPTY STATE (NO FORECAST) ==================
     if (
         data is None
-        or data["forecast_df"] is None
-        or len(data["forecast_df"]) == 0
+        or data.get("forecast_df") is None
+        or len(data.get("forecast_df")) == 0
     ):
         st.markdown('<div class="empty-card-wrapper">', unsafe_allow_html=True)
         st.markdown(
@@ -245,8 +222,8 @@ def render_forecasting_page() -> None:
         except Exception:
             plot_bytes = None
 
-    # update horizon dari hasil model
-    current_horizon = forecast_summary.get("horizon_days", 7)
+    # update horizon dari hasil model (kalau di dalam data)
+    current_horizon = forecast_summary.get("horizon_days", current_horizon)
     st.session_state["forecast_horizon_days"] = current_horizon
 
     # ================== METRIC ROW ==================
@@ -257,12 +234,13 @@ def render_forecasting_page() -> None:
     change_val = today_overview.get("change_pct", "-")
     volume = today_overview.get("volume", "-")
 
-    if isinstance(change_val, (int, float, float)):
+    if isinstance(change_val, (int, float)):
         change_str = f"{change_val:.2f}%"
         change_color = "#00CD34" if change_val >= 0 else "#FF0B0B"
     else:
         change_str = str(change_val)
         change_color = "#F5F5F5"
+
     with c1:
         st.markdown(
             f"""
@@ -292,7 +270,7 @@ def render_forecasting_page() -> None:
     end_price = forecast_summary.get("end_price", "-")
     avg_val = forecast_summary.get("avg_daily_change", "-")
 
-    if isinstance(avg_val, (int, float, float)):
+    if isinstance(avg_val, (int, float)):
         avg_str = f"{avg_val:.2f}%"
         avg_color = "#00CD34" if avg_val >= 0 else "#FF0B0B"
     else:
@@ -355,6 +333,7 @@ def render_forecasting_page() -> None:
     # ================== CHART + TABLE ==================
     left, right = st.columns([1.35, 1])
 
+    # ---------- CHART ----------
     with left:
         st.markdown(
             """
@@ -375,6 +354,7 @@ def render_forecasting_page() -> None:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+    # ---------- TABLE + DOWNLOAD ----------
     with right:
         st.markdown(
             """
@@ -384,7 +364,9 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-        df_show = forecast_df[["date", "forecasted", "lower_bound", "upper_bound"]].copy()
+        df_show = forecast_df[
+            ["date", "forecasted", "lower_bound", "upper_bound"]
+        ].copy()
         df_show.columns = ["Date", "Forecasted", "Lower Bound", "Upper Bound"]
 
         st.dataframe(df_show, use_container_width=True, height=240)
