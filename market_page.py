@@ -410,7 +410,7 @@ def render_market_overview(_data_dict):
                                 font-size:17px;
                                 font-family:montserrat, sans-serif;
                                 margin:5px;
-                                display:inline-block;     /* ← tambahkan */
+                                display:inline-block;     /* ← tambahkan *
                                 width:auto;    
                             ">
                                 {label}
