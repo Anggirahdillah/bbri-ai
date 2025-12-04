@@ -211,60 +211,6 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     text-align: center;
 }
 
-/* ================== FORECASTING HEADER BUTTONS ================== */
-/* Bar atas: Predict + Auto update */
-.control-row {
-    margin-top: 8px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-}
-
-/* Wrapper tombol biar rapih */
-.forecast-controls .predict-btn,
-.forecast-controls .back-btn {
-    display: flex;
-    justify-content: flex-start;
-}
-
-/* TOMBOL PREDICT */
-.forecast-controls .predict-btn div.stButton > button {
-    background-color: #2587E2 !important;
-    color: #FFFFFF !important;
-    border-radius: 999px !important;   /* pill */
-    padding: 10px 40px !important;
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    border: 1px solid #1f3b5b !important;
-    box-shadow: 0 8px 18px rgba(37,135,226,0.35) !important;
-    cursor: pointer !important;
-    min-width: 180px;
-}
-
-/* Hover Predict */
-.forecast-controls .predict-btn div.stButton > button:hover {
-    background-color: #1f6bb6 !important;
-}
-
-/* TOMBOL KEMBALI – sama bentuk, beda warna */
-.forecast-controls .back-btn div.stButton > button {
-    background-color: #111827 !important;
-    color: #E5E7EB !important;
-    border-radius: 999px !important;
-    padding: 10px 40px !important;
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    border: 1px solid #374151 !important;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.35) !important;
-    cursor: pointer !important;
-    min-width: 180px;
-}
-
-/* Hover Kembali */
-.forecast-controls .back-btn div.stButton > button:hover {
-    background-color: #1f2937 !important;
-}
-
 
 
 /* Auto-update dibuat seperti pill */
@@ -291,6 +237,7 @@ div[data-testid="stCheckbox"] label {
     color: #FFFFFF;
     font-size: 14px;
 }
+
 
 /* Horizon chips (radio) */
 .horizon-row {
@@ -342,6 +289,40 @@ div[data-testid="stDownloadButton"] > button:disabled {
     font-size: 26px;
     color: #D5D7F8;
 }
+/* ================== MAIN BUTTON STYLE (PREDICT / KEMBALI DLL) ================== */
+div[data-testid="stAppViewContainer"] div.stButton > button {
+    background-color: #2587E2 !important;  /* biru StockVision */
+    color: #FFFFFF !important;
+    border-radius: 999px !important;       /* pill */
+    padding: 10px 40px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border: 1px solid #1f3b5b !important;
+    box-shadow: 0 8px 18px rgba(37,135,226,0.35) !important;
+    cursor: pointer !important;
+    min-width: 180px;
+}
+
+/* hover */
+div[data-testid="stAppViewContainer"] div.stButton > button:hover {
+    background-color: #1f6bb6 !important;
+}
+
+            /* Tombol hidden untuk tab horizon (supaya ga kelihatan kayak kotak putih) */
+.horizon-hidden-btn div.stButton > button {
+    background: transparent !important;
+    color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+
+
 
 </style>
 """, unsafe_allow_html=True)
