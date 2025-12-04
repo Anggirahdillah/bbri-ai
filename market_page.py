@@ -166,7 +166,21 @@ def render_market_overview(_data_dict):
     if "market_horizon" not in st.session_state:
         st.session_state.market_horizon = "1D"
 
+    # BACA QUERY PARAM UNTUK TAB HORIZON (?h=1D/1W/1M/1Y)
+    params = st.query_params
+    clicked = params.get("h", None)
+
+    if clicked:
+        # kalau bentuknya list, ambil elemen pertama
+        if isinstance(clicked, list):
+            clicked = clicked[0]
+        if clicked in ["1D", "1W", "1M", "1Y"]:
+            st.session_state.market_horizon = clicked
+        # bersihkan supaya gak nge-trigger terus
+        st.query_params.clear()
+
     st.markdown('<div class="page-panel">', unsafe_allow_html=True)
+
 
     
     # ======= TITLE & SUBTITLE =======
@@ -388,49 +402,34 @@ def render_market_overview(_data_dict):
 
 
             st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
-# Tabs horizon (rapetin)
+
+            # Tabs horizon (rapetin)
             sp_left, c1, c2, c3, c4, sp_right = st.columns([3, 2, 2, 2, 2, 1])
-            # DI DALAM container yang sama dengan grafik
             cols = [c1, c2, c3, c4]
             labels = ["1D", "1W", "1M", "1Y"]
             active = st.session_state.market_horizon
 
-
             for label, col in zip(labels, cols):
                 with col:
                     if label == active:
-                        # teks aktif, biru, ada garis bawah seperti mockup
                         st.markdown(
                             f"""
-                            <p style="
-                                color:#2587E2;
-                                border-bottom:4px solid #2587E2;
-                                text-align:center;
-                                font-weight:500;
-                                font-size:17px;
-                                font-family:montserrat, sans-serif;
-                                margin:5px;
-                                display:inline-block;     /* ← tambahkan *
-                                width:auto;    
-                            ">
-                                {label}
-                            </p>
+                            <div class="h-tab-text h-tab-active">{label}</div>
                             """,
                             unsafe_allow_html=True,
                         )
                     else:
-                        # tombol pasif, abu abu
-                        if st.button(label, key=f"tab_{label}"):
+                        if st.button(label, key=f"horizon_{label}", help="", type="secondary"):
                             st.session_state.market_horizon = label
                             st.rerun()
-
-
-        
-           # ======================
-
-
-        # tutup card
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # tutup page-panel
-    st.markdown("</div>", unsafe_allow_html=True)
+                        st.markdown(
+                            f"""
+                            <script>
+                            var btn = window.parent.document.querySelector('button[key="horizon_{label}"]');
+                            if (btn) {{
+                                btn.classList.add('h-tab-btn');
+                            }}
+                            </script>
+                            """,
+                            unsafe_allow_html=True,
+                        )
