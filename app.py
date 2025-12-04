@@ -291,16 +291,16 @@ div[data-testid="stDownloadButton"] > button:disabled {
 }
 /* ================== MAIN BUTTON STYLE (PREDICT / KEMBALI DLL) ================== */
 div[data-testid="stAppViewContainer"] div.stButton > button {
-    background-color: #2587E2 !important;  /* biru StockVision */
-    color: #FFFFFF !important;
-    border-radius: 999px !important;       /* pill */
-    padding: 10px 40px !important;
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    border: 1px solid #1f3b5b !important;
-    box-shadow: 0 8px 18px rgba(37,135,226,0.35) !important;
-    cursor: pointer !important;
-    min-width: 180px;
+    background-color: #03529C;
+    color: #FFFFFF;
+    border-radius:20px;       /* pill */
+    padding: 15px 50px ;
+    font-size: 33px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 170px;
+    max-width: 171px;
+    white-space: nowrap;  
 }
 
 /* hover */
@@ -308,24 +308,42 @@ div[data-testid="stAppViewContainer"] div.stButton > button:hover {
     background-color: #1f6bb6 !important;
 }
 
-            /* Tombol hidden untuk tab horizon (supaya ga kelihatan kayak kotak putih) */
-.horizon-hidden-btn div.stButton > button {
-    background: transparent !important;
-    color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
+
+/* STYLE DASAR SEMUA SEGMENT (PASIF) */
+.h-tab-text {
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    padding: 14px 50px;            /* jangan 80px lagi biar ga numpuk */
+    border-radius: 20px;         /* biar ujung bulat, nyatu di dalam kapsul */
+    cursor: pointer;
+    transition: 0.15s ease;
+    color: #DDE2F2;               /* putih keabu-abuan */
+    white-space: nowrap;          /* teks 1D / 1W ga turun baris */
+    display: inline-block;
 }
 
+/* SEGMENT AKTIF */
+.h-tab-active {
+    background: #1976FF;
+    color: #FFFFFF;
+    border-color: #1976FF;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    padding: 15px 75px;            /* jangan 80px lagi biar ga numpuk */
+    border-radius: 20px;         /* biar ujung bulat, nyatu di dalam kapsul */
+    cursor: pointer;
+    transition: 0.15s ease;       /* putih keabu-abuan */
+    white-space: nowrap;          /* teks 1D / 1W ga turun baris */
+    display: inline-block;
+
+}
 
 
 </style>
 """, unsafe_allow_html=True)
+
 
 # Trick anti-hilang saat rerender
 st.write("")  
