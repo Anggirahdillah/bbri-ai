@@ -212,63 +212,6 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
 }
 
 
-
-/* Auto-update dibuat seperti pill */
-.auto-checkbox div[data-testid="stCheckbox"] > label {
-    background-color: #020617;
-    border-radius: 999px;
-    padding: 8px 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 1px solid #2D3648;
-}
-.auto-checkbox div[data-testid="stCheckbox"] label p {
-    margin-bottom: 0px;
-}
-.auto-checkbox div[data-testid="stCheckbox"] svg {
-    width: 14px;
-    height: 14px;
-}
-
-/* Caption checkbox */
-div[data-testid="stCheckbox"] label {
-    color: #FFFFFF;
-    font-size: 14px;
-}
-
-
-/* Horizon chips (radio) */
-.horizon-row {
-    margin-top: 0;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] {
-    display: flex;
-    gap: 5px;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label {
-    padding: 6px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    background-color: #020617;
-    color: #E5E7EB;
-    cursor: pointer;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:hover {
-    background-color: #0F172A;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
-    background-color: #2563EB !important;
-    border-color: #2563EB !important;
-    color: #FFFFFF !important;
-}
-div[data-testid="stRadio"][aria-label="forecast-horizon"] div[role='radiogroup'] input[type="radio"] {
-    opacity: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
 /* Download button biru */
 div[data-testid="stDownloadButton"] > button {
     background-color: #2563EB;
@@ -308,18 +251,17 @@ div[data-testid="stAppViewContainer"] div.stButton > button:hover {
     background-color: #1f6bb6 !important;
 }
 
-
 /* STYLE DASAR SEMUA SEGMENT (PASIF) */
 .h-tab-text {
     font-size: 17px;
     font-weight: 500;
     text-align: center;
-    padding: 14px 50px;            /* jangan 80px lagi biar ga numpuk */
-    border-radius: 20px;         /* biar ujung bulat, nyatu di dalam kapsul */
+    padding: 14px 50px;
+    border-radius: 20px;
     cursor: pointer;
     transition: 0.15s ease;
-    color: #DDE2F2;               /* putih keabu-abuan */
-    white-space: nowrap;          /* teks 1D / 1W ga turun baris */
+    color: #DDE2F2;
+    white-space: nowrap;
     display: inline-block;
 }
 
@@ -331,58 +273,56 @@ div[data-testid="stAppViewContainer"] div.stButton > button:hover {
     font-size: 17px;
     font-weight: 500;
     text-align: center;
-    padding: 15px 75px;            /* jangan 80px lagi biar ga numpuk */
-    border-radius: 20px;         /* biar ujung bulat, nyatu di dalam kapsul */
+    padding: 15px 75px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: 0.15s ease;       /* putih keabu-abuan */
-    white-space: nowrap;          /* teks 1D / 1W ga turun baris */
+    transition: 0.15s ease;
+    white-space: nowrap;
     display: inline-block;
-
 }
 
-            /* ================= HORIZON BUTTON CHIPS ================= */
-.horizon-row {
+            /* bikin vertical biasa aja */
+div[role="radiogroup"] {
+    display: block !important;
+}
+
+/* HAPUS BULLET RADIO PUTIH DI DEPAN */
+div[role="radiogroup"] > label > div:first-child {
+    display: none !important;
+}
+
+/* STYLE SETIAP ITEM MENU (ikon + teks) */
+div[role="radiogroup"] > label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-/* wrapper chips (BEBAS dari predict-btn) */
-.hz-chip,
-.hz-chip-active {
-    display: inline-block;
-    width: 100%;
-}
-
-/* style dasar semua tombol horizon */
-.hz-chip div.stButton > button,
-.hz-chip-active div.stButton > button {
-    border-radius: 14px;
-    padding: 10px 26px;
-    font-size: 17px;
-    font-weight: 500;
-    border: 1px solid #3B4450;
-    background: #111827;
+    gap: 10px;                     /* jarak emoji dan teks */
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 18px;
     color: #E5E7EB;
     cursor: pointer;
-    transition: 0.15s;
-    width: 100%;
+    margin-bottom: 6px;
+    background: transparent;
+    transition: 0.15s ease;
 }
 
-/* tombol horizon aktif: biru */
-.hz-chip-active div.stButton > button {
-    background: #1976FF;
-    border-color: #1976FF;
+/* HOVER */
+div[role="radiogroup"] > label:hover {
+    background: #114376;
     color: #FFFFFF;
 }
 
-/* hover untuk semua horizon button */
-.hz-chip div.stButton > button:hover,
-.hz-chip-active div.stButton > button:hover {
-    filter: brightness(1.1);
+/* YANG KE-SELECT = BIRU MUDA FULL BARIS */
+div[role="radiogroup"] > label[aria-checked="true"],
+div[role="radiogroup"] > label:has(input[type="radio"]:checked) {
+    background-color: #1976FF !important;  /* biru terang */
+    color: #FFFFFF !important;
 }
 
+/* pastikan teks di dalamnya ikut putih */
+div[role="radiogroup"] > label[aria-checked="true"] span {
+    color: #FFFFFF !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -398,17 +338,25 @@ with st.sidebar:
     else:
         st.markdown("### BBRI-AI")
 
-    default_menu = st.session_state.get("menu", "Dashboard")
+    st.write("")  # jarak sedikit
 
-    menu = st.radio(
-        "", 
-        ["Dashboard", "Market Overview", "Forecasting BBRI"],
-        index=["Dashboard", "Market Overview", "Forecasting BBRI"].index(default_menu),
-        key="menu_radio",
-        horizontal=True,
+    # label yang ditampilkan di radio (pakai emoji)
+    label_to_value = {
+        "🏠 Dashboard": "Dashboard",
+        "📊 Market Overview": "Market Overview",
+        "🤖 Forecasting BBRI": "Forecasting BBRI",
+    }
+
+    # radio mengembalikan LABEL
+    selected_label = st.radio(
+        "",
+        list(label_to_value.keys()),
         label_visibility="collapsed",
     )
-    st.session_state["menu"] = menu
+
+    # ubah ke VALUE internal yang dipakai routing
+    menu = label_to_value[selected_label]
+
 
 
 
@@ -430,4 +378,3 @@ elif menu == "Forecasting BBRI":
     st.markdown('<div class="page-panel">', unsafe_allow_html=True)
     render_forecasting_page()
     st.markdown('</div>', unsafe_allow_html=True)
-    
