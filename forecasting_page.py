@@ -1,33 +1,85 @@
+from typing import Optional
+
 import streamlit as st
 import pandas as pd
+from io import BytesIO
 from forecasting_engine import run_forecast
 
-st.markdown("""
+# ================== PAGE CONFIG ==================
+st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
+
+# ================== GLOBAL CSS ==================
+st.markdown(
+    """
 <style>
-div[data-test
+/* CARD UTAMA TENGAH */
+.main-card {
+    background-color: #252B31;
+    padding: 28px 34px 30px 34px;
+    border-radius: 26px;
+    max-width: 1120px;
+    margin: 32px auto 40px auto;
+}
 
-/* ================== MAIN BUTTON STYLE (PREDICT / KEMBALI DLL) ================== */
-div[data-testid="stAppViewContainer"] div.stButton > button {
-    background-color: #03529C;
-    color: #FFFFFF;
-    border-radius:20px;       /* pill */
-    padding: 15px 50px ;
-    font-size: 33px;
+/* Kartu kecil (Today Overview, Forecast Summary, Model Eval) */
+.small-card {
+    background: #252B31;
+    border-radius: 16px;
+    padding: 20px 24px;
+}
+
+/* ================= HORIZON BUTTON CHIPS ================= */
+.horizon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* wrapper chips (BEBAS dari predict-btn) */
+.hz-chip,
+.hz-chip-active {
+    display: inline-block;
+    width: 100%;
+}
+
+/* style dasar semua tombol horizon */
+.hz-chip div.stButton > button,
+.hz-chip-active div.stButton > button {
+    border-radius: 14px;
+    padding: 10px 26px;
+    font-size: 17px;
     font-weight: 500;
+    border: 1px solid #3B4450;
+    background: #111827;
+    color: #E5E7EB;
     cursor: pointer;
-    min-width: 170px;
-    max-width: 171px;
+    transition: 0.15s;
+    width: 100%;
 }
 
-/* hover */
-div[data-testid="stAppViewContainer"] div.stButton > button:hover {
-    background-color: #1f6bb6 !important;
+/* tombol horizon aktif: biru */
+.hz-chip-active div.stButton > button {
+    background: #1976FF;
+    border-color: #1976FF;
+    color: #FFFFFF;
 }
+
+/* hover untuk semua horizon button */
+.hz-chip div.stButton > button:hover,
+.hz-chip-active div.stButton > button:hover {
+    filter: brightness(1.1);
+}
+
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
+
+# =============== HALAMAN FORECASTING ===============
 def render_forecasting_page() -> None:
-    # ========== INIT SESSION STATE ==========
+    # inisialisasi state
     if "forecast_data" not in st.session_state:
         st.session_state["forecast_data"] = None
 
@@ -40,11 +92,12 @@ def render_forecasting_page() -> None:
     if "forecast_has_run" not in st.session_state:
         st.session_state["forecast_has_run"] = False
 
-    # True = sedang lihat hasil forecast, False = state awal (no forecast)
+    # state untuk menentukan tampilan: awal atau hasil
     if "forecast_show_results" not in st.session_state:
         st.session_state["forecast_show_results"] = False
 
     current_horizon = st.session_state["forecast_horizon_days"]
+
 
     # ================== WRAP DI MAIN CARD ==================
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
@@ -52,7 +105,6 @@ def render_forecasting_page() -> None:
     # ================= HEADER =================
     top_left, top_right = st.columns([3, 2])
 
-    # ------------ KIRI: TITLE, BUTTON, HORIZON ------------
     with top_left:
         # Title dan sub title
         st.markdown(
@@ -77,23 +129,16 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-        # Bar: Predict / Kembali + Auto update
-       # Bar: Predict / Kembali + Auto update
-        st.markdown('<div class="control-row forecast-controls">', unsafe_allow_html=True)
-
+        # Bar: Predict + Auto update
+        st.markdown('<div class="control-row">', unsafe_allow_html=True)
         c_predict, c_auto = st.columns([0.5, 0.5])
 
         predict_clicked = False
         back_clicked = False
 
-        # Pilih CSS class sesuai mode: awal = predict-btn, setelah forecast = back-btn
-        btn_wrapper_class = (
-            "back-btn" if st.session_state["forecast_show_results"] else "predict-btn"
-        )
-
-        # tombol Predict / Kembali
+        # tombol Predict / Kembali (dibungkus predict-btn supaya CSS nempel)
         with c_predict:
-            st.markdown(f'<div class="{btn_wrapper_class}">', unsafe_allow_html=True)
+            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 
             if st.session_state["forecast_show_results"]:
                 # SESUDAH PREDICT: tampilkan tombol Kembali
@@ -106,6 +151,14 @@ def render_forecasting_page() -> None:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
+        # checkbox Auto-update
+        with c_auto:
+            st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
+            st.checkbox("Auto-update", value=False, key="forecast_auto_update")
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
         # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
         h_label_col, h_radio_col = st.columns([0.32, 1.8])
@@ -116,26 +169,26 @@ def render_forecasting_page() -> None:
                 unsafe_allow_html=True,
             )
 
-        with h_radio_col:
-            label_map = {7: "7D", 14: "14D", 30: "30D"}
-            reverse_map = {"7D": 7, "14D": 14, "30D": 30}
-            current_label = label_map.get(current_horizon, "7D")
+    with h_radio_col:
+    # pakai button chips, bukan radio
+        current_horizon = st.session_state["forecast_horizon_days"]
+        chip_info = [("7D", 7), ("14D", 14), ("30D", 30)]
 
-            selected_label = st.radio(
-                "forecast-horizon",
-                ["7D", "14D", "30D"],
-                index=["7D", "14D", "30D"].index(current_label),
-                key="forecast_horizon_radio",
-                horizontal=True,
-                label_visibility="collapsed",
-            )
+        chip_cols = st.columns(len(chip_info))
 
-            current_horizon = reverse_map[selected_label]
-            st.session_state["forecast_horizon_days"] = current_horizon
+        for (label, days), col in zip(chip_info, chip_cols):
+            is_active = (current_horizon == days)
+            wrapper_class = "hz-chip-active" if is_active else "hz-chip"
 
-        st.markdown("</div>", unsafe_allow_html=True)
+            with col:
+                st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
+                if st.button(label, key=f"horizon_btn_{days}"):
+                    st.session_state["forecast_horizon_days"] = days
+                    current_horizon = days
+                st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------ KANAN: LAST UPDATED & MODEL ------------
+
+    # sisi kanan header: last updated & model
     if st.session_state["forecast_data"] is not None:
         last_updated = st.session_state["forecast_data"]["last_updated"]
         best_model = st.session_state["forecast_data"]["model_name"]
@@ -158,7 +211,7 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-    # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
+        # ================= KAPAN RUN_FORECAST DIPANGGIL / RESET =================
 
     # 0) user klik Kembali -> reset ke awal
     if back_clicked:
@@ -167,11 +220,9 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_has_run"] = False
         st.session_state["forecast_show_results"] = False
         st.session_state["forecast_horizon_days"] = 7
+        data = None
 
-        # langsung rerun supaya tombol berubah jadi "Predict"
-        st.rerun()
-
-    # 1) user klik Predict (pertama kali atau setelah kembali)
+    # 1) user klik Predict
     elif predict_clicked:
         data = run_forecast(ticker="BBRI.JK", horizon_days=current_horizon)
         st.session_state["forecast_data"] = data
@@ -179,10 +230,7 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_has_run"] = True
         st.session_state["forecast_show_results"] = True
 
-        # langsung rerun supaya tombol berubah jadi "Kembali" dan isi forecast muncul
-        st.rerun()
-
-    # 2) sudah pernah klik Predict lalu ganti horizon -> auto re-run
+    # 2) sudah pernah klik Predict lalu ganti horizon
     elif (
         st.session_state["forecast_has_run"]
         and st.session_state["forecast_last_horizon"] != current_horizon
@@ -191,17 +239,20 @@ def render_forecasting_page() -> None:
         st.session_state["forecast_data"] = data
         st.session_state["forecast_last_horizon"] = current_horizon
         st.session_state["forecast_show_results"] = True
+
+    # 3) tidak ada perubahan
     else:
         data = st.session_state["forecast_data"]
+
 
     # ================== AMBIL DATA DARI STATE ==================
     data = st.session_state["forecast_data"]
 
-    # ================== EMPTY STATE (NO FORECAST) ==================
+    # EMPTY STATE
     if (
         data is None
-        or data.get("forecast_df") is None
-        or len(data.get("forecast_df")) == 0
+        or data["forecast_df"] is None
+        or len(data["forecast_df"]) == 0
     ):
         st.markdown('<div class="empty-card-wrapper">', unsafe_allow_html=True)
         st.markdown(
@@ -237,8 +288,8 @@ def render_forecasting_page() -> None:
         except Exception:
             plot_bytes = None
 
-    # update horizon dari hasil model (kalau di dalam data)
-    current_horizon = forecast_summary.get("horizon_days", current_horizon)
+    # update horizon dari hasil model
+    current_horizon = forecast_summary.get("horizon_days", 7)
     st.session_state["forecast_horizon_days"] = current_horizon
 
     # ================== METRIC ROW ==================
@@ -249,13 +300,12 @@ def render_forecasting_page() -> None:
     change_val = today_overview.get("change_pct", "-")
     volume = today_overview.get("volume", "-")
 
-    if isinstance(change_val, (int, float)):
+    if isinstance(change_val, (int, float, float)):
         change_str = f"{change_val:.2f}%"
         change_color = "#00CD34" if change_val >= 0 else "#FF0B0B"
     else:
         change_str = str(change_val)
         change_color = "#F5F5F5"
-
     with c1:
         st.markdown(
             f"""
@@ -285,7 +335,7 @@ def render_forecasting_page() -> None:
     end_price = forecast_summary.get("end_price", "-")
     avg_val = forecast_summary.get("avg_daily_change", "-")
 
-    if isinstance(avg_val, (int, float)):
+    if isinstance(avg_val, (int, float, float)):
         avg_str = f"{avg_val:.2f}%"
         avg_color = "#00CD34" if avg_val >= 0 else "#FF0B0B"
     else:
@@ -348,7 +398,6 @@ def render_forecasting_page() -> None:
     # ================== CHART + TABLE ==================
     left, right = st.columns([1.35, 1])
 
-    # ---------- CHART ----------
     with left:
         st.markdown(
             """
@@ -369,7 +418,6 @@ def render_forecasting_page() -> None:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- TABLE + DOWNLOAD ----------
     with right:
         st.markdown(
             """
@@ -379,9 +427,7 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
-        df_show = forecast_df[
-            ["date", "forecasted", "lower_bound", "upper_bound"]
-        ].copy()
+        df_show = forecast_df[["date", "forecasted", "lower_bound", "upper_bound"]].copy()
         df_show.columns = ["Date", "Forecasted", "Lower Bound", "Upper Bound"]
 
         st.dataframe(df_show, use_container_width=True, height=240)
