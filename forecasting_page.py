@@ -106,14 +106,6 @@ def render_forecasting_page() -> None:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # checkbox Auto-update (UI aja, belum dipakai)
-        with c_auto:
-            st.markdown('<div class="auto-checkbox">', unsafe_allow_html=True)
-            st.checkbox("Auto-update", value=False, key="forecast_auto_update")
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
         # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
         h_label_col, h_radio_col = st.columns([0.32, 1.8])
