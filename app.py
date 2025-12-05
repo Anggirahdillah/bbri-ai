@@ -340,6 +340,48 @@ div[data-testid="stAppViewContainer"] div.stButton > button:hover {
 
 }
 
+            /* ================= HORIZON BUTTON CHIPS ================= */
+.horizon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* wrapper chips (BEBAS dari predict-btn) */
+.hz-chip,
+.hz-chip-active {
+    display: inline-block;
+    width: 100%;
+}
+
+/* style dasar semua tombol horizon */
+.hz-chip div.stButton > button,
+.hz-chip-active div.stButton > button {
+    border-radius: 14px;
+    padding: 10px 26px;
+    font-size: 17px;
+    font-weight: 500;
+    border: 1px solid #3B4450;
+    background: #111827;
+    color: #E5E7EB;
+    cursor: pointer;
+    transition: 0.15s;
+    width: 100%;
+}
+
+/* tombol horizon aktif: biru */
+.hz-chip-active div.stButton > button {
+    background: #1976FF;
+    border-color: #1976FF;
+    color: #FFFFFF;
+}
+
+/* hover untuk semua horizon button */
+.hz-chip div.stButton > button:hover,
+.hz-chip-active div.stButton > button:hover {
+    filter: brightness(1.1);
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -388,3 +430,4 @@ elif menu == "Forecasting BBRI":
     st.markdown('<div class="page-panel">', unsafe_allow_html=True)
     render_forecasting_page()
     st.markdown('</div>', unsafe_allow_html=True)
+    
