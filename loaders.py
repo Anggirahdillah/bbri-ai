@@ -9,7 +9,6 @@ from pathlib import Path
 @st.cache_resource
 def load_models(base_dir: Path):
     models_dir = base_dir / "models"
-
     best_model_path = models_dir / "best_model.pkl"
     lightgbm_path = models_dir / "model_lightgbm.pkl"
 
