@@ -84,7 +84,7 @@ def render_forecasting_page() -> None:
 
         # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
-        h_label_col, h_radio_col = st.columns([0.26, 1])
+        h_label_col, h_radio_col = st.columns([0.22, 1])
 
     with h_label_col:
      st.markdown(
@@ -371,6 +371,7 @@ def render_forecasting_page() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
     with right:
+        # Menambahkan div dengan kelas CSS .bottom-card untuk styling
         st.markdown(
             """
             <div class="bottom-card">
@@ -379,12 +380,54 @@ def render_forecasting_page() -> None:
             unsafe_allow_html=True,
         )
 
+        # Memformat dataframe ke dalam HTML
         df_show = forecast_df[["date", "forecasted", "lower_bound", "upper_bound"]].copy()
         df_show.columns = ["Date", "Forecasted", "Lower Bound", "Upper Bound"]
 
-        st.dataframe(df_show, use_container_width=True, height=240)
+        # Mengonversi dataframe ke HTML
+        table_html = df_show.to_html(index=False, classes="styled-table")
 
+        # Menambahkan HTML untuk styling
+        st.markdown(
+            f"""
+            <style>
+            .styled-table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 0;
+            }}
+            .styled-table th, .styled-table td {{
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }}
+            .styled-table th {{
+                background-color: #252B31;
+                color: #2587E2;
+                font-size: 16px;
+            }}
+            .styled-table td {{
+                background-color: #333;
+                color: #FFFFFF;
+                font-size: 14px;
+            }}
+            .styled-table tr:nth-child(even) {{
+                background-color: #2a2d34;
+            }}
+            .styled-table tr:hover {{
+                background-color: #444;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Menampilkan tabel yang sudah diberi styling
+        st.markdown(table_html, unsafe_allow_html=True)
+
+        # Menyiapkan CSV untuk download
         csv_bytes = df_show.to_csv(index=False).encode("utf-8")
+
 
         col1, col2 = st.columns(2)
         with col1:
@@ -406,3 +449,6 @@ def render_forecasting_page() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)  # tutup .main-card
+
+    st.markdown("</div>", unsafe_allow_html=True)
+        
