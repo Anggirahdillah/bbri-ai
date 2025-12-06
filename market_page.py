@@ -21,40 +21,29 @@ TICKER_LIST = [
 
 # =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
-    """Ambil data harga dari Yahoo Finance sesuai horizon, stabil tanpa session."""
-
+    """Ambil data harga dari Yahoo Finance sesuai horizon."""
+    # Set interval dan periode berdasarkan horizon yang dipilih
     if horizon == "1D":
-        period = "5d"   # aman, tidak mudah empty
-        interval = "5m"
+        period = "3d"  # Mengambil 5 hari terakhir untuk 1D
+        interval = "1d"  # Gunakan interval harian untuk 1D
     elif horizon == "1W":
         period = "5d"
-        interval = "30m"
+        interval = "30m"  # Interval 30 menit untuk 1 minggu
     elif horizon == "1M":
         period = "1mo"
-        interval = "1d"
+        interval = "1d"  # Gunakan interval harian untuk 1 bulan
     else:  # "1Y"
         period = "1y"
-        interval = "1d"
+        interval = "1d"  # Interval harian untuk 1 tahun
 
-    df = yf.download(
-        ticker,
-        period=period,
-        interval=interval,
-        auto_adjust=False,
-        progress=False,
-    )
+    try:
+        df = yf.download(ticker, period=period, interval=interval, auto_adjust=False, progress=False)
+        return df
+    except Exception as e:
+        st.error(f"Error fetching data for {ticker}: {e}")
+        return pd.DataFrame()  # Mengembalikan DataFrame kosong jika gagal
 
-    # fallback untuk IDX (misal user input "BBRI" bukan "BBRI.JK")
-    if df.empty and not ticker.endswith(".JK"):
-        df = yf.download(
-            ticker + ".JK",
-            period=period,
-            interval=interval,
-            auto_adjust=False,
-            progress=False,
-        )
 
-    return df
 
 
 def compute_metrics(df: pd.DataFrame):
