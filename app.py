@@ -64,7 +64,7 @@ p,span,label {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
-    margin: 0;
+    margin: 10px 10px 10px 0;
 }
 .metric-card-low {
     background-color: #252B31;
@@ -200,6 +200,7 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     margin: 0 0 0 0;
     padding : 4px;
     color: #2587E2;
+     /* Mengurangi padding */
 }
 
 
