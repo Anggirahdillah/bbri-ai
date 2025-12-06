@@ -19,16 +19,9 @@ TICKER_LIST = [
 ]
 
 
-# Default ticker yang digunakan jika belum ada pemilihan
-if "market_ticker" not in st.session_state:
-    st.session_state.market_ticker = "BBRI.JK"
-
-# Fungsi untuk mengambil data harga saham dari Yahoo Finance
+# =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
     """Ambil data harga dari Yahoo Finance sesuai horizon."""
-    period, interval = "", ""
-
-    # Menentukan periode dan interval berdasarkan horizon yang dipilih
     if horizon == "1D":
         period = "1d"
         interval = "5m"
@@ -38,13 +31,16 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
     elif horizon == "1M":
         period = "1mo"
         interval = "1d"
-    elif horizon == "1Y":
+    else:  # "1Y"
         period = "1y"
         interval = "1d"
 
-    # Mengambil data dengan yfinance
     df = yf.download(
-        ticker, period=period, interval=interval, auto_adjust=False, progress=False
+        ticker,
+        period=period,
+        interval=interval,
+        auto_adjust=False,
+        progress=False,
     )
 
     return df
