@@ -97,7 +97,7 @@ def render_dashboard(data_dict):
                     Team Members
                 </h4>
                 <ul style="font-size:27px; color:#C9D1D9; line-height:1.5; margin:0; padding-left:18px;">
-                    <li>A'lza Karimatul Lailiyah</li>
+                    <li>A'iza Karimatul Lailiyah</li>
                     <li>Anggi Rahmadillah</li>
                     <li>Geoffrey Jedidiah. S</li>
                     <li>Riche Chalimul Habibah</li>
