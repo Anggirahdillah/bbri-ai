@@ -6,6 +6,9 @@ from dashboard_page import render_dashboard
 from market_page import render_market_overview
 from forecasting_page import render_forecasting_page
 from forecasting_engine import run_forecast
+import os
+
+
 
 BASE_DIR = Path(__file__).parent
 
@@ -333,10 +336,10 @@ st.write("")
 
 with st.sidebar:
     logo_path = BASE_DIR / "images" / "logo bri ai.png"
-    if logo_path.exists():
+    if os.path.exists(logo_path):
         st.image(str(logo_path), use_container_width=True)
     else:
-        st.markdown("### BBRI-AI")
+        st.error(f"Logo file not found at {logo_path}")
 
     st.write("")  # jarak sedikit
 
