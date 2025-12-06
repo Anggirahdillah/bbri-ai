@@ -84,11 +84,11 @@ def render_forecasting_page() -> None:
 
         # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
-        h_label_col, h_radio_col = st.columns([0.2, 1])
+        h_label_col, h_radio_col = st.columns([0.22, 1])
 
     with h_label_col:
      st.markdown(
-        '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:0;text-align:right;"></p>',
+         '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:0;text-align:left;">choose horizon :</p>',
         unsafe_allow_html=True,
     )
 
