@@ -222,7 +222,7 @@ def render_market_overview(_data_dict):
     
 
     if df.empty:
-        st.warning("PASAR SEDANG TUTUP")
+        st.warning("Tidak ada data untuk ticker ini. Coba ticker lain.")
         st.markdown("</div>", unsafe_allow_html=True)
         return
 
