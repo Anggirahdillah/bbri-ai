@@ -329,6 +329,37 @@ div[role="radiogroup"] > label:has(input[type="radio"]:checked) {
 div[role="radiogroup"] > label[aria-checked="true"] span {
     color: #FFFFFF !important;
 }
+            
+     .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .styled-table th, .styled-table td {
+        padding: 10px;
+        text-align: center;
+    }
+    .styled-table th {
+        background-color: #252B31;  /* Latar belakang header gelap */
+        color: #2587E2;  /* Warna teks header biru terang */
+        font-size: 20px;
+        font-weight: 400px;
+    }
+    .styled-table td {
+        background-color: #1E2328;  /* Latar belakang data gelap */
+        color: #FFFFFF;  /* Warna teks putih */
+        font-size: 14px;
+        border: 1px solid #6F6F6F;
+    }
+    .styled-table tr:nth-child(even) {
+        background-color: #252B31;  /* Baris genap berwarna lebih gelap */
+    }
+    .styled-table tr:hover {
+        background-color: #333;  /* Efek hover untuk baris */
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -344,12 +375,13 @@ with st.sidebar:
         st.markdown("### BBRI-AI")
 
     st.write("")  # jarak sedikit
+    
 
     # label yang ditampilkan di radio (pakai emoji)
     label_to_value = {
         "🏠 Dashboard": "Dashboard",
-        "📊 Market Overview": "Market Overview",
-        "🤖 Forecasting BBRI": "Forecasting BBRI",
+        "〽 Market Overview": "Market Overview",
+        " ✵ Forecasting BBRI": "Forecasting BBRI",
     }
 
     # radio mengembalikan LABEL
