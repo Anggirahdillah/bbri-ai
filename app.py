@@ -414,3 +414,4 @@ elif menu == "Forecasting BBRI":
     st.markdown('<div class="page-panel">', unsafe_allow_html=True)
     render_forecasting_page()
     st.markdown('</div>', unsafe_allow_html=True)
+    
