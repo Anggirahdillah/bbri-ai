@@ -21,9 +21,10 @@ TICKER_LIST = [
 
 # =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
-    """Ambil data harga dari Yahoo Finance sesuai horizon."""
+    """Ambil data harga dari Yahoo Finance sesuai horizon, stabil tanpa session."""
+
     if horizon == "1D":
-        period = "1d"
+        period = "5d"   # aman, tidak mudah empty
         interval = "5m"
     elif horizon == "1W":
         period = "5d"
@@ -43,9 +44,17 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
         progress=False,
     )
 
+    # fallback untuk IDX (misal user input "BBRI" bukan "BBRI.JK")
+    if df.empty and not ticker.endswith(".JK"):
+        df = yf.download(
+            ticker + ".JK",
+            period=period,
+            interval=interval,
+            auto_adjust=False,
+            progress=False,
+        )
+
     return df
-
-
 
 
 def compute_metrics(df: pd.DataFrame):
@@ -433,4 +442,3 @@ def render_market_overview(_data_dict):
                             """,
                             unsafe_allow_html=True,
                         )
-                        
