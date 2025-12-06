@@ -19,13 +19,9 @@ TICKER_LIST = [
 ]
 
 
-import yfinance as yf
-import pandas as pd
-import pytz
-
-# Fungsi untuk mengambil data harga saham dan mengubah zona waktu ke WIB
+# =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
-    """Ambil data harga dari Yahoo Finance sesuai horizon dan konversi ke WIB."""
+    """Ambil data harga dari Yahoo Finance sesuai horizon."""
     if horizon == "1D":
         period = "1d"
         interval = "5m"
@@ -39,7 +35,6 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
         period = "1y"
         interval = "1d"
 
-    # Ambil data dari Yahoo Finance
     df = yf.download(
         ticker,
         period=period,
@@ -48,16 +43,7 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
         progress=False,
     )
 
-    # Jika data kosong, kembalikan DataFrame kosong
-    if df.empty:
-        return df
-    
-    # Konversi waktu ke WIB (Waktu Indonesia Barat)
-    df.index = df.index.tz_convert("UTC").tz_localize(None)  # Hapus zona waktu saat ini
-    df.index = df.index.tz_localize(pytz.timezone("Asia/Jakarta"))  # Setel ke WIB
-
     return df
-
 
 
 
@@ -236,7 +222,7 @@ def render_market_overview(_data_dict):
     
 
     if df.empty:
-        st.warning("Tidak ada data untuk ticker ini. Coba ticker lain.")
+        st.warning("PASAR SEDANG")
         st.markdown("</div>", unsafe_allow_html=True)
         return
 
