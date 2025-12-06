@@ -83,7 +83,7 @@ def render_forecasting_page() -> None:
 
 
         # Horizon chips
-         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
+        st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
         h_label_col, h_radio_col = st.columns([0.23, 1])
 
     with h_label_col:
@@ -93,12 +93,13 @@ def render_forecasting_page() -> None:
     )
 
 
+
     with h_radio_col:
 
         current_horizon = st.session_state["forecast_horizon_days"]
         labels = [("7D", 7), ("14D", 14), ("30D", 30)]
 
-        sp_right, c1, c2, c3, sp_left = st.columns([2, 5, 5, 5, 20])
+        sp_right, c1, c2, c3, sp_left = st.columns([3, 5, 5, 5, 25])
         cols = [c1, c2, c3]
 
         for (label, days), col in zip(labels, cols):
