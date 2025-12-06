@@ -4,8 +4,6 @@ import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
 
-if "market_ticker" not in st.session_state:
-    st.session_state.market_ticker = "BBRI.JK"  # Default ticker
 # Ticker yang muncul di dropdown
 TICKER_LIST = [
     "BBRI.JK",
@@ -22,6 +20,9 @@ TICKER_LIST = [
 
 
 # =============== DATA YAHOO FINANCE =============== #
+if "market_ticker" not in st.session_state:
+    st.session_state.market_ticker = "BBRI.JK"  # Default ticker
+
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
     """Ambil data harga dari Yahoo Finance sesuai horizon."""
     if horizon == "1D":
@@ -207,15 +208,11 @@ def render_market_overview(_data_dict):
     top_left, _ = st.columns([3, 1])
     with top_left:
         ticker = st.selectbox(
-    "Select Ticker",
-    options=TICKER_LIST,
-    index=TICKER_LIST.index(st.session_state.market_ticker),  # Menyinkronkan dengan session state
-    key="market_ticker",
-)
-
-# Menyimpan nilai ticker yang dipilih ke session state
-st.session_state.market_ticker = ticker
-
+            "Select Ticker",
+            options=TICKER_LIST,
+            index=0,
+            key="market_ticker",
+        )
 
     # ====== STATE HORIZON (UNTUK TAB 1D/1W/1M/1Y) ======
     if "market_horizon" not in st.session_state:
