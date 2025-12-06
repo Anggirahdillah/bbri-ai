@@ -63,23 +63,23 @@ def render_forecasting_page() -> None:
         )
 
         # Bar: Predict
-        st.markdown('<div class="control-row">', unsafe_allow_html=True)
-        c_predict = st.columns(1)[0]
+    st.markdown('<div class="control-row">', unsafe_allow_html=True)
+    c_predict = st.columns(1)[0]
 
-        predict_clicked = False
-        back_clicked = False
+    predict_clicked = False
+    back_clicked = False
 
-        with c_predict:
-            st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+    with c_predict:
+        st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 
-            if st.session_state["forecast_show_results"]:
-                if st.button("Kembali", key="forecast_back"):
-                    back_clicked = True
-            else:
-                if st.button("Predict", key="forecast_predict"):
-                    predict_clicked = True
+        if st.session_state["forecast_show_results"]:
+            if st.button("Kembali", key="forecast_back"):
+                back_clicked = True
+        else:
+            if st.button("Predict", key="forecast_predict"):
+                predict_clicked = True
 
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
         # Horizon chips
