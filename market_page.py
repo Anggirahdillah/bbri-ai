@@ -4,6 +4,8 @@ import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
 
+if "market_ticker" not in st.session_state:
+    st.session_state.market_ticker = "BBRI.JK"  # Default ticker
 # Ticker yang muncul di dropdown
 TICKER_LIST = [
     "BBRI.JK",
