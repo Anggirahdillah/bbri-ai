@@ -21,6 +21,7 @@ TICKER_LIST = [
 
 # =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
+    """Ambil data harga dari Yahoo Finance sesuai horizon."""
     if horizon == "1D":
         period = "1d"
         interval = "5m"
@@ -30,11 +31,10 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
     elif horizon == "1M":
         period = "1mo"
         interval = "1d"
-    else:  # 1Y
+    else:  # "1Y"
         period = "1y"
         interval = "1d"
 
-    # --- coba download intraday dulu ---
     df = yf.download(
         ticker,
         period=period,
@@ -43,18 +43,7 @@ def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
         progress=False,
     )
 
-    # --- fallback kalau kosong (server blok intraday) ---
-    if df.empty:
-        df = yf.download(
-            ticker,
-            period="1mo" if horizon in ["1D", "1W"] else "1y",
-            interval="1d",
-            auto_adjust=False,
-            progress=False,
-        )
-
     return df
-
 
 
 
