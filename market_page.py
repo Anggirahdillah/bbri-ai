@@ -22,26 +22,28 @@ TICKER_LIST = [
 # =============== DATA YAHOO FINANCE =============== #
 def fetch_price_data(ticker: str, horizon: str) -> pd.DataFrame:
     """Ambil data harga dari Yahoo Finance sesuai horizon."""
-    # Set interval dan periode berdasarkan horizon yang dipilih
     if horizon == "1D":
-        period = "3d"  # Mengambil 5 hari terakhir untuk 1D
-        interval = "1d"  # Gunakan interval harian untuk 1D
+        period = "1d"
+        interval = "5m"
     elif horizon == "1W":
         period = "5d"
-        interval = "30m"  # Interval 30 menit untuk 1 minggu
+        interval = "30m"
     elif horizon == "1M":
         period = "1mo"
-        interval = "1d"  # Gunakan interval harian untuk 1 bulan
+        interval = "1d"
     else:  # "1Y"
         period = "1y"
-        interval = "1d"  # Interval harian untuk 1 tahun
+        interval = "1d"
 
-    try:
-        df = yf.download(ticker, period=period, interval=interval, auto_adjust=False, progress=False)
-        return df
-    except Exception as e:
-        st.error(f"Error fetching data for {ticker}: {e}")
-        return pd.DataFrame()  # Mengembalikan DataFrame kosong jika gagal
+    df = yf.download(
+        ticker,
+        period=period,
+        interval=interval,
+        auto_adjust=False,
+        progress=False,
+    )
+
+    return df
 
 
 
@@ -220,7 +222,7 @@ def render_market_overview(_data_dict):
     
 
     if df.empty:
-        st.warning("Tidak ada data untuk ticker ini. Coba ticker lain.")
+        st.warning("PASAR SEDANG TUTUP")
         st.markdown("</div>", unsafe_allow_html=True)
         return
 
