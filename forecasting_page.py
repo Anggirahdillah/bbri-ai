@@ -232,7 +232,7 @@ def render_forecasting_page() -> None:
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
 
-     # Ambil DataFrame forecast dan gambar plot
+  # Ambil DataFrame forecast dan gambar plot
     forecast_df = data["forecast_df"]
     price_fig = data["price_fig"]
 
@@ -243,7 +243,6 @@ def render_forecasting_page() -> None:
             plot_bytes = price_fig.to_image(format="png")  # Pastikan kaleido terpasang
         except Exception as e:
             st.error(f"Error converting plot to image: {e}")
-
 
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
