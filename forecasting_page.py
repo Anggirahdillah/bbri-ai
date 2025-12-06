@@ -97,14 +97,12 @@ def render_forecasting_page() -> None:
         current_horizon = st.session_state["forecast_horizon_days"]
         labels = [("7D", 7), ("14D", 14), ("30D", 30)]
 
-        # layout horizon: rapat dengan jarak seperti Market Overview
         sp_left, c1, c2, c3, sp_right = st.columns([3, 2, 2, 2, 1])
         cols = [c1, c2, c3]
 
         for (label, days), col in zip(labels, cols):
             with col:
                 if current_horizon == days:
-
                     # TAB AKTIF: biru, kotak rapi
                     st.markdown(
                         f"""
