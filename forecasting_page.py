@@ -88,7 +88,7 @@ def render_forecasting_page() -> None:
 
     with h_label_col:
      st.markdown(
-        '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:0;text-align:left;">horizon:</p>',
+        '<p style="color:#D5D7F8;font-size:26px;margin-right:0;padding-right:0;text-align:left;">choose horizon:</p>',
         unsafe_allow_html=True,
     )
 
@@ -232,13 +232,18 @@ def render_forecasting_page() -> None:
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
 
-    # siapkan bytes untuk download plot
+     # Ambil DataFrame forecast dan gambar plot
+    forecast_df = data["forecast_df"]
+    price_fig = data["price_fig"]
+
+    # Mengonversi plot menjadi bytes (PNG)
     plot_bytes = None
     if price_fig is not None:
         try:
-            plot_bytes = price_fig.to_image(format="png")  # butuh kaleido
-        except Exception:
-            plot_bytes = None
+            plot_bytes = price_fig.to_image(format="png")  # Pastikan kaleido terpasang
+        except Exception as e:
+            st.error(f"Error converting plot to image: {e}")
+
 
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
@@ -384,48 +389,13 @@ def render_forecasting_page() -> None:
         df_show = forecast_df[["date", "forecasted", "lower_bound", "upper_bound"]].copy()
         df_show.columns = ["Date", "Forecasted", "Lower Bound", "Upper Bound"]
 
-        # Mengonversi dataframe ke HTML
+        # Mengonversi dataframe ke HTML dengan class CSS
         table_html = df_show.to_html(index=False, classes="styled-table")
 
-        # Menambahkan HTML untuk styling
-        st.markdown(
-            f"""
-            <style>
-            .styled-table {{
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 0;
-            }}
-            .styled-table th, .styled-table td {{
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #ddd;
-            }}
-            .styled-table th {{
-                background-color: #252B31;
-                color: #2587E2;
-                font-size: 16px;
-            }}
-            .styled-table td {{
-                background-color: #333;
-                color: #FFFFFF;
-                font-size: 14px;
-            }}
-            .styled-table tr:nth-child(even) {{
-                background-color: #2a2d34;
-            }}
-            .styled-table tr:hover {{
-                background-color: #444;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Menampilkan tabel yang sudah diberi styling
+        # Menampilkan tabel yang sudah di-styling
         st.markdown(table_html, unsafe_allow_html=True)
 
-        # Menyiapkan CSV untuk download
+        # Menyiapkan file CSV untuk download
         csv_bytes = df_show.to_csv(index=False).encode("utf-8")
 
 
