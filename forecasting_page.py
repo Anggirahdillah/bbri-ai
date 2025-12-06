@@ -4,8 +4,6 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 from forecasting_engine import run_forecast
-import os
-os.environ["KALEIDO_PATH"] = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 # ================== PAGE CONFIG ==================
 st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
@@ -234,17 +232,13 @@ def render_forecasting_page() -> None:
     model_eval: dict = data["model_eval"]
     price_fig = data["price_fig"]
 
-  # Ambil DataFrame forecast dan gambar plot
-    forecast_df = data["forecast_df"]
-    price_fig = data["price_fig"]
-
-    # Mengonversi plot menjadi bytes (PNG)
+    # siapkan bytes untuk download plot
     plot_bytes = None
     if price_fig is not None:
         try:
-            plot_bytes = price_fig.to_image(format="png")  # Pastikan kaleido terpasang
-        except Exception as e:
-            st.error(f"Error converting plot to image: {e}")
+            plot_bytes = price_fig.to_image(format="png")  # butuh kaleido
+        except Exception:
+            plot_bytes = None
 
     # update horizon dari hasil model
     current_horizon = forecast_summary.get("horizon_days", 7)
@@ -422,4 +416,4 @@ def render_forecasting_page() -> None:
     st.markdown("</div>", unsafe_allow_html=True)  # tutup .main-card
 
     st.markdown("</div>", unsafe_allow_html=True)
-
+        
