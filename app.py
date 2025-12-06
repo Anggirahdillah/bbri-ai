@@ -64,7 +64,7 @@ p,span,label {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
-    margin: 10px 10px 10px 0;
+    margin: 0;
 }
 .metric-card-low {
     background-color: #252B31;
@@ -78,7 +78,7 @@ p,span,label {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
-    margin: 10px 0 10px 20px;
+    margin: 10px 0 10px 80px;
     width: 250px;
 }
 
@@ -86,7 +86,7 @@ p,span,label {
     background-color: #252B31;
     padding: 10px 25px;
     border-radius: 20px;
-    margin: 0 0 0 50px;
+    margin: 0 0 0 80px;
 }
 
 .metric-value { font-size: 32px; font-weight: 700; }
@@ -200,7 +200,6 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
     margin: 0 0 0 0;
     padding : 4px;
     color: #2587E2;
-     /* Mengurangi padding */
 }
 
 
@@ -299,7 +298,7 @@ div[role="radiogroup"] > label > div:first-child {
 
 /* STYLE SETIAP ITEM MENU (ikon + teks) */
 div[role="radiogroup"] > label {
-    display: inline-block;
+    display: flex;
     align-items: center;
     gap: 10px;                     /* jarak emoji dan teks */
     padding: 10px 18px;
