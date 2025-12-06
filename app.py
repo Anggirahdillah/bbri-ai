@@ -31,7 +31,7 @@ body { background-color: #1A1E23; }
 /* Sidebar */
 section[data-testid="stSidebar"] {
     background-color: #072A4A;
-    padding-top: 20px;
+    padding-top: 0;
 }
 
 h1{
@@ -116,7 +116,7 @@ section[data-testid="stSidebar"] div.stButton > button {
     color: #6B7280 !important;
     font-size: 17px;
     font-family: Inter, sans-serif;
-    padding-bottom: 4px;
+    padding-bottom: 0;
 }
 
 section[data-testid="stSidebar"] div.stButton > button:hover {
@@ -299,7 +299,7 @@ div[role="radiogroup"] > label > div:first-child {
 
 /* STYLE SETIAP ITEM MENU (ikon + teks) */
 div[role="radiogroup"] > label {
-    display: flex;
+    display: inline-block;
     align-items: center;
     gap: 10px;                     /* jarak emoji dan teks */
     padding: 10px 18px;
@@ -324,6 +324,7 @@ div[role="radiogroup"] > label:has(input[type="radio"]:checked) {
     background-color: #1976FF !important;  /* biru terang */
     color: #FFFFFF !important;
 }
+
 
 /* pastikan teks di dalamnya ikut putih */
 div[role="radiogroup"] > label[aria-checked="true"] span {
@@ -414,4 +415,3 @@ elif menu == "Forecasting BBRI":
     st.markdown('<div class="page-panel">', unsafe_allow_html=True)
     render_forecasting_page()
     st.markdown('</div>', unsafe_allow_html=True)
-    
