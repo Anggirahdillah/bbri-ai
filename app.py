@@ -8,8 +8,6 @@ from forecasting_page import render_forecasting_page
 from forecasting_engine import run_forecast
 import os
 
-
-
 BASE_DIR = Path(__file__).parent
 
 st.set_page_config(
@@ -333,13 +331,12 @@ div[role="radiogroup"] > label[aria-checked="true"] span {
 # Trick anti-hilang saat rerender
 st.write("")  
 
-
+logo_path = BASE_DIR / "images" / "logo bri ai.png"
 with st.sidebar:
-    logo_path = BASE_DIR / "images" / "logo bri ai.png"
-    if os.path.exists(logo_path):
+    if logo_path.exists():
         st.image(str(logo_path), use_container_width=True)
     else:
-        st.error(f"Logo file not found at {logo_path}")
+        st.markdown("### BBRI-AI")
 
     st.write("")  # jarak sedikit
 
@@ -359,7 +356,6 @@ with st.sidebar:
 
     # ubah ke VALUE internal yang dipakai routing
     menu = label_to_value[selected_label]
-
 
 
 
