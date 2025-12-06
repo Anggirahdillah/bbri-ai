@@ -88,7 +88,7 @@ def render_forecasting_page() -> None:
 
     with h_label_col:
      st.markdown(
-        '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:0;text-align:left;">choose horizon :</p>',
+        '<p style="color:#D5D7F8;font-size:26px;margin-right:0;padding-right:0;text-align:left;">choose horizon :</p>',
         unsafe_allow_html=True,
     )
 
