@@ -369,13 +369,12 @@ feature_cols = preps.get("feature_cols")
 df_prepared = data.get("prepared")
 
 if menu == "Dashboard":
-    st.write("Rendering Dashboard...")
     render_dashboard(data)
 
 elif menu == "Market Overview":
-    st.write("Rendering Market Overview...")
     render_market_overview(data)
 
 elif menu == "Forecasting BBRI":
-    st.write("Rendering Forecasting BBRI...")
+    st.markdown('<div class="page-panel">', unsafe_allow_html=True)
     render_forecasting_page()
+    st.markdown('</div>', unsafe_allow_html=True)
