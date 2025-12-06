@@ -51,7 +51,7 @@ h2,h3,h4,h5,h6 {
 p,span,label {
     color: #C9D1D9;
     font-family: "Inter", sans-serif;
-    font-weight: 400;
+    font-weight: 200;
 }
 
 /* 📌 Card components */
@@ -191,15 +191,18 @@ div[role='radiogroup'] > label:has(input[type="radio"]:checked) {
 .bottom-card {
     background: #252B31;
     border-radius: 20px;
-    padding: 10px 10px;
-    height: 100%;
+    padding: 5px 5px;  /* Mengurangi padding */
+    font-size: 26px;  /* Menurunkan ukuran font */
 }
+
 .chart-title {
-    font-size: 24px;
     font-weight: 500;
+    margin: 0 0 0 0;
+    padding : 4px;
     color: #2587E2;
-            
+     /* Mengurangi padding */
 }
+
 
 /* EMPTY STATE */
 .empty-card-wrapper {
@@ -232,6 +235,8 @@ div[data-testid="stDownloadButton"] > button:disabled {
 .sub-label {
     font-size: 26px;
     color: #D5D7F8;
+    margin: 0 0 50px 0;
+    
 }
 /* ================== MAIN BUTTON STYLE (PREDICT / KEMBALI DLL) ================== */
 div[data-testid="stAppViewContainer"] div.stButton > button {
