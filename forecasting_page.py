@@ -84,11 +84,11 @@ def render_forecasting_page() -> None:
 
         # Horizon chips
         st.markdown('<div class="horizon-row">', unsafe_allow_html=True)
-        h_label_col, h_radio_col = st.columns([0.23, 1])
+        h_label_col, h_radio_col = st.columns([0.2, 1])
 
     with h_label_col:
      st.markdown(
-        '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:20px;text-align:left;">choose horizon: </p>',
+        '<p style="color:#D5D7F8;font-size:28px;margin-right:0;padding-right:0;text-align:right;"></p>',
         unsafe_allow_html=True,
     )
 
@@ -99,7 +99,7 @@ def render_forecasting_page() -> None:
         current_horizon = st.session_state["forecast_horizon_days"]
         labels = [("7D", 7), ("14D", 14), ("30D", 30)]
 
-        sp_right, c1, c2, c3, sp_left = st.columns([3, 5, 5, 5, 25])
+        sp_right, c1, c2, c3, sp_left = st.columns([2, 5, 5, 5, 20])
         cols = [c1, c2, c3]
 
         for (label, days), col in zip(labels, cols):
