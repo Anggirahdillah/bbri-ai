@@ -210,7 +210,7 @@ def render_market_overview(_data_dict):
         ticker = st.selectbox(
             "Select Ticker",
             options=TICKER_LIST,
-            index=0,
+            index=TICKER_LIST.index(st.session_state.market_ticker),
             key="market_ticker",
         )
 
