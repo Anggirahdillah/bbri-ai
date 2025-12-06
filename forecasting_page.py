@@ -4,6 +4,8 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 from forecasting_engine import run_forecast
+import os
+os.environ["KALEIDO_PATH"] = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 # ================== PAGE CONFIG ==================
 st.set_page_config(page_title="Stock Forecast Dashboard", layout="wide")
@@ -420,4 +422,4 @@ def render_forecasting_page() -> None:
     st.markdown("</div>", unsafe_allow_html=True)  # tutup .main-card
 
     st.markdown("</div>", unsafe_allow_html=True)
-        
+
