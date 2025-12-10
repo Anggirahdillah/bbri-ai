@@ -306,7 +306,7 @@ with st.sidebar:
     st.write("")
     
     label_to_value = {
-        "⌂ Dashboard": "Dashboard",
+        "⌂ Beranda": "Dashboard",
         "〽 Market Overview": "Market Overview",
         "✴ Forecasting BBRI": "Forecasting BBRI",
     }
