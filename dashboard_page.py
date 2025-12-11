@@ -89,7 +89,6 @@ def render_dashboard(data_dict):
                     <li>A'iza Karimatul Lailiyah</li>
                     <li>Anggi Rahmadillah</li>
                     <li>Geoffrey Jedidiah. S</li>
-                    <li>Riche Chalimul Habibah</li>
                 </ul>
             </div>
             """,
