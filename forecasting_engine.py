@@ -18,6 +18,9 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
                 hist_path = os.path.join(data_dir, fname)
                 break
 
+        print("HIST PATH USED:", os.path.abspath(hist_path))
+        print("HIST MTIME:", datetime.fromtimestamp(os.path.getmtime(hist_path)))
+
     if hist_path is not None and os.path.exists(hist_path):
         try:
             hist = pd.read_csv(hist_path)
@@ -258,4 +261,3 @@ def run_forecast(ticker: str = "BBRI.JK", horizon_days: int = 7) -> dict:
         "last_updated": datetime.now().strftime("%Y-%m-%d"),
         "model_name": model_name,
     }
-
